@@ -1,0 +1,3 @@
+[submodule "new"]
+	path = new
+	url = https://github.com/PajaritoCantor/minitalk42.git
