@@ -6,7 +6,7 @@
 /*   By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 10:23:24 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/08/31 06:35:51 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/04 20:21:18 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,6 @@ void	init_data(char **argv, t_info *data)
 	data->msg = argv[2];
 	if (data->server_pid == 0)
 		ft_print_error("PID del servidor es inválido.");
-}
-
-void	handler(int signum, siginfo_t *info, void *context)
-{
-	(void)signum;
-	(void)info;
-	(void)context;
 }
 
 /**

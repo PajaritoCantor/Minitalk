@@ -6,16 +6,16 @@
 /*   By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 11:48:42 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/08/31 07:31:08 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/04 20:22:50 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-
-void	handler(int signum)
+void    handler(int signum)
 {
-	(void)signum;
+         (void)signum;
 }
+
 /**
 * @Envía el tamaño y el contenido del mensaje,
 * desde client hasta server.
@@ -24,7 +24,14 @@ void	handler(int signum)
 * y luego reconstruir estos bits
 * en un mensaje coherente
 **/
-
+void	send_bit(int bit, int server_pid)
+{
+	if (bit)
+		kill(server_pid, SIGUSR1);
+	else
+		kill(server_pid, SIGUSR2);
+	usleep(100);
+}
 int	main(int argc, char *argv[])
 {
 	pid_t	pid;
