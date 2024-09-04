@@ -6,7 +6,7 @@
 /*   By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 10:23:24 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/04 20:21:18 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/05 00:02:49 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,16 @@ void	init_data(char **argv, t_info *data)
 * @param pid EL PID del proceso al que se enviará la señal.
 * @param signal La señal que se desea enviar.
 */
-
 void	send_signal(pid_t pid, int signal)
 {
+	printf("Sending signal %d to PID %d\n", signal, pid);
 	if (kill(pid, signal) == -1)
-		ft_print_error("Error al enviar la señal.");
+	{
+		perror("Error al enviar la señal.");
+		exit(EXIT_FAILURE);
+	}
 }
+
 /**
 * @brief envía los bits de un valor como señales al servidor.
 *
@@ -63,7 +67,6 @@ void	send_signal(pid_t pid, int signal)
 * @param bit_length Longitud en bits del valor a enviar.
 * @param info Puntero a la estructura t_info con la información del servidor.
 */
-
 void	send_signals(void *data, size_t bit_length, t_info *info)
 {
 	size_t	i;
@@ -96,28 +99,15 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 *
 * @param data Puntero a la estructura t_info que contiene el mensaje y PIDs.
 */
-void	send_message(int server_pid, const char *msg)
+void	send_message(char *str, t_info *data)
 {
-	int	i;
-	int	bit;
-	int	j;
+	struct sigaction	sa;
+	int				i;
 
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigactionn = sig_handler;
+	sigaction(SIGUSR2, &sa, NULL);
+	sigaction(SIGUSR1, &sa, NULL);
 	i = 0;
-	j = 0;
-	while (i < 32 || msg[i - 32])
-	{
-	if (i < 32)
-		bit = (ft_strlen(msg) >> (31 - i)) & 1;
-	else
-	{
-		while(j < 8)
-		{
-			bit = (msg[i - 32] >> (7 - j)) & 1;
-			send_bit(bit, server_pid);
-			j++;
-		}
-	}
-	send_bit(bit, server_pid);
-	i++;
-	}
-}
+	while (str[i])
+		sig_sender(&str[i++], 8, data);

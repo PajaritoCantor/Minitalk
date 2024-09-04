@@ -6,7 +6,7 @@
 /*   By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 10:26:28 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/04 20:18:32 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/05 00:03:57 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_info
 extern t_global g_server;
 // client
 void	init_data(char **argv, t_info *data);
+void	signal_handler
 void	send_signal(pid_t pid, int signal);
 void	send_signals(void *data, size_t bit_length, t_info *info);
 void	send_message(int server_pid, const char *msg);

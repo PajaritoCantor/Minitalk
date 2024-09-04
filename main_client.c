@@ -6,7 +6,7 @@
 /*   By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 11:48:42 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/04 20:22:50 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/04 20:51:43 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,10 @@ int	main(int argc, char *argv[])
 
 	pid = ft_atoi(argv[1]);
 	message = argv[2];
-
 	sa.sa_handler = handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction(SIGUSR1, &sa, NULL);
-
 	send_message(pid, message);
-
 	return (EXIT_SUCCESS);
 }
