@@ -34,9 +34,10 @@ void	send_bit(int bit, int server_pid)
 }
 int	main(int argc, char *argv[])
 {
-	pid_t	pid;
+	
 	char *message;
 	struct sigaction sa;
+	t_info	data;
 
 	if (argc != 3)
 	{
@@ -44,12 +45,12 @@ int	main(int argc, char *argv[])
 		return (EXIT_FAILURE);
 	}
 
-	pid = ft_atoi(argv[1]);
 	message = argv[2];
+	init_data(argv, &data);
 	sa.sa_handler = handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction(SIGUSR1, &sa, NULL);
-	send_message(pid, message);
+	send_message(message, &data);
 	return (EXIT_SUCCESS);
 }

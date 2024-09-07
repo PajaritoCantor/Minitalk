@@ -54,7 +54,7 @@ int	lost_signal(int sender_pid, int signum, int *i, void *context)
 		printf("i [%d] client: %d con señal: %d\n", (*i), sender_pid, signum);
 		sender_pid = g_server.actual_pid;
 	}
-	return (0);
+	return (sender_pid);
 }
 
 /**

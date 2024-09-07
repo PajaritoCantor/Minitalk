@@ -49,18 +49,17 @@ typedef struct s_info
 extern t_global g_server;
 // client
 void	init_data(char **argv, t_info *data);
-void	signal_handler
 void	send_signal(pid_t pid, int signal);
 void	send_signals(void *data, size_t bit_length, t_info *info);
-void	send_message(int server_pid, const char *msg);
+void	send_message(char *str, t_info *data);
 
 // server
 void	reserve_memory_for_msg(void);
 int		lost_signal(int sender_pid, int signum, int *i, void *context);
 void	handle_header(int *i, int signum);
 void	handle_msg(int *i, int signum);
-void	signal_handler(int signum, siginfo_t *info, void *context);
-void	keep_server_up(void);
+void	signal_handler(int signun, siginfo_t *info, void *context);
 
+void	keep_server_up(void);
 void	send_bit(int bit, int server_pid);
 #endif

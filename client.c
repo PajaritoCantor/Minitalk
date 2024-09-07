@@ -33,6 +33,12 @@ void	init_data(char **argv, t_info *data)
 		ft_print_error("PID del servidor es inválido.");
 }
 
+void	signal_handler(int signum, siginfo_t *info, void *context)
+{
+	(void)signum;
+	(void)info;
+	(void)context;
+}
 /**
 * @brief Envía una señal a un proceso específico
 * 
@@ -105,9 +111,12 @@ void	send_message(char *str, t_info *data)
 	int				i;
 
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigactionn = sig_handler;
+	sa.sa_sigaction = signal_handler;
 	sigaction(SIGUSR2, &sa, NULL);
 	sigaction(SIGUSR1, &sa, NULL);
 	i = 0;
 	while (str[i])
-		sig_sender(&str[i++], 8, data);
+	{
+		send_signals(&str[i++], 8, data);
+	}
+}
