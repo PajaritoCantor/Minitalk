@@ -12,7 +12,7 @@
 
 #include "minitalk.h"
 
-t_global g_server;
+t_global g_client;
 
 /**
 * @brief Reserva memoria para almacenar el mensaje 
@@ -24,14 +24,16 @@ t_global g_server;
 * Si la asignación falla, imprime un mensaje
 * de error y sale del programa.
 */
-void	reserve_memory_for_msg(void)
+void	reserve_memory_for_msg(int *i)
 {
-	g_server.msg = (char *)ft_calloc(g_server.msg_size + 1, sizeof(char));
-	if (!g_server.msg)
-	{
-		perror("Malloc allocation failed");
-		exit(EXIT_FAILURE);
-	}
+	ft_printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg); 
+	g_client.msg.message = ft_calloc((g_client.msg.size_msg + 1), 1);
+	if (g_client.msg.message == NULL)
+	ft_print_error("Malloc allocation failed");
+	g_client.getting_header = 0;
+	g_client.getting_msg = 1;
+	(*i) = 0;
+	
 }
 
 /**
@@ -48,11 +50,10 @@ void	reserve_memory_for_msg(void)
 int	lost_signal(int sender_pid, int signum, int *i, void *context)
 {
 	(void)context;
-
 	if (sender_pid == 0 && (signum == SIGUSR1 || signum == SIGUSR2))
 	{
 		printf("i [%d] client: %d con señal: %d\n", (*i), sender_pid, signum);
-		sender_pid = g_server.actual_pid;
+		sender_pid = g_client.actual_pid;
 	}
 	return (sender_pid);
 }
@@ -68,18 +69,15 @@ int	lost_signal(int sender_pid, int signum, int *i, void *context)
 */
 void	handle_header(int *i, int signum)
 {
-	int	bit_value;
-
-	bit_value = get_bit_value(signum);
-	if (*i < HEADER_SIZE)
+	const int	bit_value = get_bit_value(signum);
+	
+	if ((*i) < HEADER_SIZE)
 	{
-		g_server.msg_size |= (bit_value << (HEADER_SIZE - 1 - *i));
+		g_client.msg.size_msg |= (bit_value << (HEADER_SIZE - 1 - (*i)));
 		(*i)++;
 	}
-	if (*i == HEADER_SIZE)
-	{
-		reserve_memory_for_msg();
-	}
+	if ((*i) == HEADER_SIZE)
+		reserve_memory_for_msg(i);
 }
 
 /**
@@ -90,30 +88,30 @@ void	handle_header(int *i, int signum)
 * Una vez que se recibe el mensaje completo, 
 * se imprime y se reinicia el servidor.
 *
-* @param i EL índice actual del bit
-* @param signum La señal recibida.
 */
 void	handle_msg(int *i, int signum)
 {
-	static char	char_value;
+	static int	char_value;
 	static int	msg_pos;
-	int	bit_value;
+	const int	bit_value = get_bit_value(signum);
 
-	bit_value = get_bit_value(signum);
+	if (*i % 8 < 8)
+	{
 	char_value |= (bit_value << (7 - (*i % 8)));
 	(*i)++;
-	if (*i % 8 == 0 && *i != 0)
-	{
-		g_server.msg[msg_pos] = char_value;
-		msg_pos++;
-		char_value = 0;
 	}
-	if (msg_pos == g_server.msg_size)
+	if (*i % 8 == 0)
 	{
-		printf("message: [%s]\n", g_server.msg);
-		free(g_server.msg);
-		ft_bzero(&g_server, sizeof(g_server));
-		g_server.getting_header = 1;
+		g_client.msg.message[msg_pos] = char_value;
+		char_value = 0;
+		msg_pos++;
+	}
+	if (*i / 8 == g_client.msg.size_msg)
+	{
+		printf("message: [%s]\n", g_client.msg.message);
+		free(g_client.msg.message);
+		ft_bzero(&g_client, sizeof(g_client));
+		g_client.getting_header = 1;
 		*i = 0;
 		msg_pos = 0;
 	}
@@ -134,16 +132,23 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	static int	i;
 
-	(void)context;
-	i = 0;
-	if (!g_server.actual_pid)
-		g_server.actual_pid = info->si_pid;
-	if (info->si_pid != g_server.actual_pid || info->si_pid == getpid())
+	(void)context;	
+	info->si_pid = lost_signal(info->si_pid, signum, &i, context);
+	if (info->si_pid == getpid())
+		ft_print_error("Proceso propio");
+	g_client.client_pid = info->si_pid;
+	if (g_client.actual_pid == 0)
+	{
+		pong(g_client.client_pid);
 		return ;
-	if (g_server.getting_header)
+	}
+	if (g_client.actual_pid	!= g_client.client_pid)
+		return ;
+	if (g_client.getting_header == 1)
 		handle_header(&i, signum);
-	else
+	else if (g_client.getting_msg == 1)
 		handle_msg(&i, signum);
-	if (i % 8 == 0 && !g_server.getting_header && !g_server.getting_msg)
-		kill(g_server.client_pid, SIGNAL_RECEIVED);
+	else if(g_client.client_pid != 0 && (signum == SIGUSR1 || signum == SIGUSR2))
+	       	kill(g_client.client_pid, SIGNAL_RECEIVED);
 }
+

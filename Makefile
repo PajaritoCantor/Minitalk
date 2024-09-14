@@ -19,7 +19,7 @@ WHITE   =   \033[0m
 NAME_C  =   client
 NAME_S  =   server
 
-CLIENT_SRC  =   client.c main_client.c
+CLIENT_SRC  =   client.c main_client.c miniutils.c
 SERVER_SRC  =   server.c main_server.c
 
 SERVER_OBJ  =	$(SERVER_SRC:.c=.o)	

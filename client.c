@@ -28,7 +28,8 @@ void	init_data(char **argv, t_info *data)
 	ft_memset(data, 0, sizeof(t_info));
 	data->server_pid = ft_atoi_limits(argv[1]);
 	data->client_pid = getpid();
-	data->msg = argv[2];
+	ft_printfd(2, "PID CLIENT %d\n", data->client_pid);
+	data->message = argv[2];
 	if (data->server_pid == 0)
 		ft_print_error("PID del servidor es inválido.");
 }
@@ -52,7 +53,7 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 void	send_signal(pid_t pid, int signal)
 {
 	printf("Sending signal %d to PID %d\n", signal, pid);
-	if (kill(pid, signal) == -1)
+	if (kill(pid, signal))
 	{
 		perror("Error al enviar la señal.");
 		exit(EXIT_FAILURE);
@@ -75,24 +76,23 @@ void	send_signal(pid_t pid, int signal)
 */
 void	send_signals(void *data, size_t bit_length, t_info *info)
 {
-	size_t	i;
-	unsigned char	value;
+	int	i;
+	unsigned long long	value;
 
 	value = 0;
-	i = bit_length;
 	if (bit_length == 8)
 		value = *((unsigned char *)data);
 	else if (bit_length == 32)
 		value = *((unsigned int *)data);
 	i = bit_length - 1;
-	while (i > 0)
+	while (i >= 0)
 	{
-		if (value &(1ULL << i))
-			send_signal(info->server_pid, SIGUSR1);
+		if (value & (1ULL << i))
+			send_signal(info->server_pid, CHAR_1);
 		else
-			send_signal(info->server_pid, SIGUSR2);
+			send_signal(info->server_pid, CHAR_0);
 		i--;
-		usleep (100);
+			usleep (500);
 	}
 }
 
@@ -113,10 +113,9 @@ void	send_message(char *str, t_info *data)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = signal_handler;
 	sigaction(SIGUSR2, &sa, NULL);
-	sigaction(SIGUSR1, &sa, NULL);
 	i = 0;
+	printf("Enviando mensaje: %s al servidor con PID: %d\n", str, data->server_pid);
 	while (str[i])
-	{
-		send_signals(&str[i++], 8, data);
-	}
+	send_signals(&str[i++], 8, data);
+	printf("Mensaje enviado: %s\n", str);
 }

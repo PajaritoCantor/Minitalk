@@ -92,9 +92,8 @@ int		ft_putnbr_base(int fd, size_t nbr, char *b);
 int		ft_putnbr(int fd, int n);
 int		ft_pointer(int fd, void *p);
 // minitalk functions
-int		get_bit_value(int signum);
-void	ft_print_error(char *error_msg);
 
+void	ft_print_error(char *error_msg);
 // Funciones de Listas Enlazadas
 typedef struct s_list
 {

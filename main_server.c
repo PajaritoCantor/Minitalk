@@ -22,26 +22,51 @@
 
 void	keep_server_up(void)
 {
+	
 	while (1)
-		pause();
+	{
+		sleep(1);
+	}
 }
 
+int	get_bit_value(int signum)
+{
+	if (signum == SIGUSR1)
+		return (0);
+	return (1);
+}
 /**
 * @brief Inicializa el servidor
 * y configura los manejadores de señales
 *
 * @return int Retorna 0 si la ejecución es exitosa.
 */
+#define SERVER_READY SIGUSR1
+#define SERVER_BUSY SIGUSR2
+
+int	pong(int pid)
+{
+	kill(pid, SERVER_READY);
+	g_client.actual_pid = pid;
+	g_client.getting_header = 1;
+	return (EXIT_SUCCESS);
+}
+
 int	main(void)
 {
 	struct sigaction	sa;
+	pid_t			server_pid;
 
-	ft_memset(&g_server, 0, sizeof(t_global));
-	printf("Server PID: %d\n", getpid());
-	sa.sa_sigaction = &signal_handler;
+	ft_memset(&g_client, 0, sizeof(t_global));
+	printf("Memoria a cero\n");
+	server_pid = getpid();
+	ft_printfd(1, "Server PID: %d\n", server_pid);
+	printf("Configurando manejadores de señal...\n");
+	sa.sa_sigaction = signal_handler;
 	sa.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
+	printf("Manejadores de señal configurados correctamente\n");
 	keep_server_up();
 	return (0);
 }
