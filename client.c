@@ -28,10 +28,10 @@ void	init_data(char **argv, t_info *data)
 {
 	ft_memset(data, 0, sizeof(t_info));
 	ft_printf("Inicializando datos...\n");
-	data->server_pid = ft_atoi_limits(argv[1]);
-	ft_printf("Convirtiendo PID del servidor: %s\n", argv[1]);
 	data->client_pid = getpid();
 	ft_printf("Obteniendo PID del client: %d\n", data->client_pid);
+	data->server_pid = ft_atoi_limits(argv[1]);
+	ft_printf("Convirtiendo PID del servidor: %s\n", argv[1]);
 	data->message = argv[2];
 	ft_printf("Mensaje asignado: %s\n", data->message);
 	if (data->server_pid == 0)
@@ -52,14 +52,13 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 	(void)signum;
 	(void)info;
 	(void)context;
-
 	if (signum == SIGUSR2)
 	{
-		ft_printf("Señal SIGUSR2 recibida: Error en elservidor\n");
+		ft_printf("SIGUSR2 sig received: Server error msg\n");
 	}
 	else if (signum == SIGUSR1)
 	{
-		ft_printf("Señal SIGUSR1 recibida: Mensaje procesado correctamente por el server\n");
+		ft_printf("SIGUSR1 sig received: Msg processed by the server:\n");
 	}
 }
 
@@ -69,7 +68,9 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 * @param signal = Señal que se desea enviar (SIGUSR1 o SIGUSR2).
 *
 * Esta función envía una señal a un proceso utilizando la llamada 'kill()'. 
-* Si ocurre un error al enviar la señal, muestra un mensaje de error y termina el programa. La información sobre el envío se imprime en la consola.
+* Si ocurre un error al enviar la señal, 
+* muestra un mensaje de error y termina el programa. 
+* La información sobre el envío se imprime en la consola.
 */
 void	send_signal(pid_t pid, int signal)
 {
@@ -96,9 +97,9 @@ void	send_signal(pid_t pid, int signal)
 */
 void	send_signals(void *data, size_t bit_length, t_info *info)
 {
-	int	i;
+	int					i;
 	unsigned long long	value;
-	
+
 	value = 0;
 	if (bit_length == 8)
 		value = *((unsigned char *)data);
@@ -109,16 +110,16 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 	{
 		if (value & (1ULL << i))
 		{
-			ft_printf("Enviando bit 1 al servidor\n");
+			//ft_printf("Enviando bit 1 al servidor\n");
 			send_signal(info->server_pid, CHAR_1);
 		}
 		else
 		{
-			ft_printf("Enviando bit 0 al servidor\n");
+			//ft_printf("Enviando bit 0 al servidor\n");
 			send_signal(info->server_pid, CHAR_0);
 		}
 		i--;
-			usleep (500);
+		usleep (500);
 	}
 }
 
@@ -134,14 +135,14 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 void	send_message(char *str, t_info *data)
 {
 	struct sigaction	sa;
-	int				i;
+	int					i;
 
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = signal_handler;
 	sigaction(SIGUSR2, &sa, NULL);
 	i = 0;
-	printf("Enviando mensaje: %s al servidor con PID: %d\n", str, data->server_pid);
+	ft_printf("Sending msg: %s server PID: %d\n", str, data->server_pid);
 	while (str[i])
-	send_signals(&str[i++], 8, data);
-	printf("Mensaje enviado: %s\n", str);
+		send_signals(&str[i++], 8, data);
+	ft_printf("Mensaje enviado: %s\n", str);
 }
