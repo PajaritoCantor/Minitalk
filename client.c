@@ -13,46 +13,66 @@
 #include "minitalk.h"
 
 /**
-* @brief inicializa la struct de datos t_info.
-*
+* @brief inicializa la struct de datos t_info
+* con la información del cliente y servidor.
 * @param argv Argumentos del programa, incluyendo PID del servidor y mensaje.
 * @param data Puntero a la estructura t_info a inicializar.
-* @Inicializa la estructura a 0
-* @Convierte la PID del servidor
-* @Obtiene el mensaje de los argumentos
-* @Verifica que el PID del servidor sea válida
+* @Inicializa los datos.
+* @Convierte el PID del servidor.
+* @Obtiene el PID del cliente actual.
+* @Asigna el mensaje de los argumentos.
+* @Verifica que el PID del servidor sea válido.
 */
 
 void	init_data(char **argv, t_info *data)
 {
 	ft_memset(data, 0, sizeof(t_info));
+	ft_printf("Inicializando datos...\n");
 	data->server_pid = ft_atoi_limits(argv[1]);
+	ft_printf("Convirtiendo PID del servidor: %s\n", argv[1]);
 	data->client_pid = getpid();
-	ft_printfd(2, "PID CLIENT %d\n", data->client_pid);
+	ft_printf("Obteniendo PID del client: %d\n", data->client_pid);
 	data->message = argv[2];
+	ft_printf("Mensaje asignado: %s\n", data->message);
 	if (data->server_pid == 0)
 		ft_print_error("PID del servidor es inválido.");
 }
 
+/**
+ * @brief Manejador de señales. Se activa cuando se recibe una señal.
+ * @param signum = Señal recibida
+ * @param info = Información sobre el proceso que envió la señal.
+ * @param context = Contexto del manejador de señal.
+ *
+ * Este manejador de señales se activa
+ * cuando se recibe una señal específica.
+ */
 void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	(void)signum;
 	(void)info;
 	(void)context;
+
+	if (signum == SIGUSR2)
+	{
+		ft_printf("Señal SIGUSR2 recibida: Error en elservidor\n");
+	}
+	else if (signum == SIGUSR1)
+	{
+		ft_printf("Señal SIGUSR1 recibida: Mensaje procesado correctamente por el server\n");
+	}
 }
+
 /**
-* @brief Envía una señal a un proceso específico
-* 
-* Esta función utiliza la función "kill" para enviar una señal específica
-* al proceso identificado por 'pid'. Si la función 'kill' falla, se maneja
-* el error imprimiendo un mensaaje de error y terminando el programa.
+* @brief Envía una señal a un proceso específico utilizando 'kill()'.
+* @param pid = El PID del proceso destino
+* @param signal = Señal que se desea enviar (SIGUSR1 o SIGUSR2).
 *
-* @param pid EL PID del proceso al que se enviará la señal.
-* @param signal La señal que se desea enviar.
+* Esta función envía una señal a un proceso utilizando la llamada 'kill()'. 
+* Si ocurre un error al enviar la señal, muestra un mensaje de error y termina el programa. La información sobre el envío se imprime en la consola.
 */
 void	send_signal(pid_t pid, int signal)
 {
-	printf("Sending signal %d to PID %d\n", signal, pid);
 	if (kill(pid, signal))
 	{
 		perror("Error al enviar la señal.");
@@ -78,7 +98,7 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 {
 	int	i;
 	unsigned long long	value;
-
+	
 	value = 0;
 	if (bit_length == 8)
 		value = *((unsigned char *)data);
@@ -88,9 +108,15 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 	while (i >= 0)
 	{
 		if (value & (1ULL << i))
+		{
+			ft_printf("Enviando bit 1 al servidor\n");
 			send_signal(info->server_pid, CHAR_1);
+		}
 		else
+		{
+			ft_printf("Enviando bit 0 al servidor\n");
 			send_signal(info->server_pid, CHAR_0);
+		}
 		i--;
 			usleep (500);
 	}
