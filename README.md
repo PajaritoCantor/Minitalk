@@ -112,3 +112,42 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 - **{1, 2}:** En el estado 0, si el carácter no es un dígito (pos = 0), el autómata se mueve al estado 1. Si es un dígito (pos = 1), se mueve al estado 2.
 - **{1, 1}:** En el estado 1, siempre se mueve al estado 1, independiente de si el carácter es un dígito o no.
 - **{1, 2}:** En el estado 2, si el carácter no es un digito (pos = 0), el aútomata se mueve al estado 1. Si es un dígito, se mantiene el estado 2.
+
+**init_data(argv, &data):** Inicializ la estructura t_info con valores necesarios para la comunicación del cliente con el servidor, incluyendo el PID del cliente, el PID del servidor y el mensaje a enviar. También valida el PID del servidor para asegurarse de que sea correcto. 
+
+	void	init_data(char **argv, t_info *data)
+	{
+		ft_memset(data, 0, sizeof(t_info));
+		ft_printf("Inicializando datos...\n");
+		data->client_pid = getpid();
+		ft_printf("Obteniendo PID del client: %d\n", data->client_pid);
+		data->server_pid = ft_atoi_limits(argv[1]);
+		ft_printf("Convirtiendo PID del servidor: %s\n", argv[1]);
+		data->message = argv[2];
+		ft_printf("Mensaje asignado: %s\n", data->message);
+		if (data->server_pid == 0)
+		ft_print_error("PID del servidor es inválido.");
+	}
+- Se inicializa la memoria de la estructura a cero. Esto es crucial para evitar comportamientos inesperados debido a datos no inicializados y garantiza que todos los campos comiencen con valores predeterminados.
+- Obtiene el PID del proceso actual. Esto es necesario para identificar el cliente durante la comunicación con el servidor.
+- Convierte el primer argumento de la línea de comandos (el PID del server) de una cadena a un número entero. Esto es esencial para poder enviar señales al servidor y asegurar que el PID se maneje correctamente en formato entero.
+- Asigna el segundo argumento de la línea de comandos al campo correspondiente.
+- Verifica si el PID del servidor es cero, y en este caso, muestra un mensaje de error.
+
+**if (ping(data.server_pid) == 0):** Esta función tiene la tarea de enviar señales al servidor para verificar si està listo para recibir mensajes.
+
+	int ping	(int pid)
+	{
+    	    struct sigaction sa;
+
+    	    printf("Configurando ping para el servidor con PID: %d\n", pid);
+	    sa.sa_flags = SA_SIGINFO;
+    	    sa.sa_sigaction = ping_handler;
+    	    g_server.pid = pid;
+    	    g_server.is_ready = 0;
+   	    sigaction(SIGUSR1, &sa, NULL);
+    	    sigaction(SIGUSR2, &sa, NULL);
+    	    handle_timeouts(pid);
+            printf("Server ready: %d\n", g_server.is_ready);
+            return (g_server.is_ready);
+       }
