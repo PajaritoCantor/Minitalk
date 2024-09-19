@@ -215,6 +215,8 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 
 * **g_server.pid = pid:** Establece el **server PID** al que se va a enviar el **ping** en la variable global **g_server.pid**. Esto es importante porque **ping handler** usará esta variable para verificar si las señales recibidas provienen del **server** correcto.
 
+**g_server.is_ready = 0:** Se establece en **0**, lo que indica que el**server** no está listo inicialmente.
+
 **sigaction(SIGUSR1, &sa, NULL):**
 **sigaction(SIGUSR2, &sa, NULL):**
 
@@ -222,7 +224,67 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 - La primera llamada establece que **SIGUSR1** debe ser manejada por **ping_hanndler**, y la segunda hace lo mismo para **SIGUSR2**.
 - La tercera variable **NULL** indica que no se necesita recuperar la configuración anterior para estas señales.
 
-**handle_timeouts(pid):** Esta función envía señales **SIGUSR1** al servidor repetidamente y espera una respuesta durante un tiempo determinado. Durante este procesos, el programa está esperando que el servidor responda con la señal adecuada (SIGUS1 O SIGUSR2), actualizando **g_server.is_ready**
+**handle_timeouts(pid):** Esta función envía señales **SIGUSR1** al **server** **RETRY_TIMES** y espera una respuesta durante un tiempo determinado. Durante este proceso, el programa está esperando que el **server** responda con la señal adecuada **(SIGUS1 O SIGUSR2)**, actualizando **g_server.is_ready**.
+
+**msg_len = ft_strlen(argv[2]);** Aquí se calcula la longitud del **message** **argv[2]** que se quiere enviar al **server**.
+
+**send_signals(&msg_len, 32, &data);** 
+
+	void	send_signals(void *data, size_t bit_length, t_info *info)
+	{
+		int					i;
+		unsigned long long	value;
+
+		value = 0;
+		if (bit_length == 8)
+			value = *((unsigned char *)data);
+		else if (bit_length == 32)
+			value = *((unsigned int *)data);
+		i = bit_length - 1;
+		while (i >= 0)
+		{
+			if (value & (1ULL << i))
+			{
+			send_signal(info->server_pid, CHAR_1);
+			}
+			else
+			{
+			send_signal(info->server_pid, CHAR_0);
+			}
+			i--;
+			usleep (100);
+	}
+	}
+
+* Esta función toma el valor de **msg_len**, lo castea a **8** o **32** **bits** y lo envía **bit a bit** al **server**.
+* **Envía los bits de un valor (ya sea **msg_len** o los **caracteres**) uno por uno, usando **send_signal()**. Dependiendo del valor del **bit**, envía **SIGUSR1** (para un **1**) o **SIGUSR2** (para un **0**).
+- Usa **send_signal(pid_t pid, int signal)** para envíar **señales** al proceso del **server** utilizando **kill()**. Dependiendo del **bit**, envía **SIGUSR1** o **SIGUSR2**.
+- Se usa **usleep()** para hacer una pequeña pausa entre el envío de cada **bit**, permitiendo que el **server** procese las señales.
+
+**send_message(data.message, &data);**
+
+	void	send_message(char *str, t_info *data)
+	{
+		struct sigaction	sa;
+		int					i;
+
+		sa.sa_flags = SA_SIGINFO;
+		sa.sa_sigaction = signal_handler;
+		sigaction(SIGUSR2, &sa, NULL);
+		i = 0;
+		while (str[i])
+			send_signals(&str[i++], 8, data);
+	}
+
+* **Después de enviar la longitud del mensaje, se envía la longitud del mensaje en sí:**
+  - **send_message** toma cada carácter del **message**, lo convierte a **8 bits** y llama a **send_signals()** para enviar esos **bits** uno por uno.
+  - La función también configura el **signal_handler** para manejar señales entrantes durante el proceso de envío. 
+
+
+
+
+
+
 
 **Glosario**
 
@@ -233,6 +295,24 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 - **Estados:** Representan diferentes condiciones o situaciones en las que el sistema puede encontrarse.
 - **Entradas/Acciones:** Son eventos o inputs que provocan un cambio de estado.
 - **Transiciones:** Definen cómo el sistema cambia de un estado a otra en función de las entradas.
+
+## sa_flags
+
+El campo s**a_flags** en la estructura **sigaction** es un conjunto de opciones que modifican el comportamiento del **manejador de señales**. Algunas de las banderas más comunes que se pueden configurar en sa_flags incluyen:
+
+### SA_SIGINFO
+
+- Es una bandera utilizada en el contexto de la función ***sigaction*** para especificar cómo debe manejarse unaa señal en un programa C. Es parte del **estándar POSIX***.
+  
+- Su propósito es indicar que se desea usar una función manejadora de señales más avanzada que provea información adicional sobre la señal, en lugar de solo usar un simple manejador de señales (es decir, solo pasando el número de la señal).
+  
+**SA_RESTART:** Hace que algunas llamadas al sistema (como read, write, etc.) que son interrumpidas por la señal se reinicien automáticamente.
+
+**SA_NODEFER:** Permite que la señal que está siendo manejada no sea bloqueada mientras el manejador está activo.
+
+**SA_RESETHAND:** Restaura el comportamiento por defecto de la señal después de que esta haya sido manejada una vez, es decir, después de que se ejecute el manejador, la señal vuelve a su comportamiento original.
+
+**SA_NOCLDSTOP:** Impide que se genere una señal SIGCHLD cuando un proceso hijo se detiene o continúa (solo relevante para SIGCHLD).
 
 ## SA_SIGINFO
 
