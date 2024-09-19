@@ -151,3 +151,4 @@ Una tabla de estados es una herramienta común en la programación que se usa en
             printf("Server ready: %d\n", g_server.is_ready);
             return (g_server.is_ready);
        }
+
