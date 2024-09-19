@@ -13,6 +13,9 @@
 #ifndef MINITALK_H
 # define MINITALK_H
 
+# define CHAR_0 SIGUSR1
+# define CHAR_1 SIGUSR2
+
 # include "library/libft.h"
 # include <signal.h>
 # include <sys/time.h>
@@ -25,31 +28,28 @@
 
 # define USAGE "\rUsage:\n\t./client [pid_server] [message]"
 
-#define HEADER_SIZE 32
-#define SIGNAL_RECEIVED SIGUSR2
-
-# define CHAR_0 SIGUSR1
-# define CHAR_1 SIGUSR2
+# define HEADER_SIZE	32
+# define SIGNAL_RECEIVED SIGUSR2
 
 //server
 typedef struct s_msg
 {
-	int	size_msg;
+	int		size_msg;
 	char	*message;
 }	t_msg;
 
 typedef struct s_global
 {
-	int				pid;
-	int	client_pid;
-	int	actual_pid;
-	int	getting_header;
-	int	getting_msg;
-	t_msg	msg;
+	int						pid;
+	int						client_pid;
+	int						actual_pid;
+	int						getting_header;
+	int						getting_msg;
+	t_msg					msg;
 	volatile sig_atomic_t	is_ready;
 }	t_global;
 
-extern t_global g_client;
+extern t_global					g_client;
 //client
 typedef struct s_info
 {
@@ -58,14 +58,14 @@ typedef struct s_info
 	char	*message;
 }	t_info;
 
-extern t_global	g_server;
+extern t_global					g_server;
 
 // client
 void	init_data(char **argv, t_info *data);
 void	send_signal(pid_t pid, int signal);
 void	send_signals(void *data, size_t bit_length, t_info *info);
 void	send_message(char *str, t_info *data);
-int	ping(int pid);
+int		ping(int pid);
 
 // server
 void	reserve_memory_for_msg(int *i);
@@ -77,7 +77,7 @@ void	handle_timeouts(int pid);
 void	parser(int argc, char **argv);
 void	evaluate(const char *str);
 void	keep_server_up(void);
-int	get_bit_value(int signum);
-int	pong(int pid);
+int		get_bit_value(int signum);
+int		pong(int pid);
 
 #endif

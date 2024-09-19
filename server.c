@@ -12,7 +12,7 @@
 
 #include "minitalk.h"
 
-t_global g_client;
+t_global	g_client;
 
 /**
 * @brief Reserva memoria para almacenar el mensaje 
@@ -26,14 +26,13 @@ t_global g_client;
 */
 void	reserve_memory_for_msg(int *i)
 {
-	ft_printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg); 
+	ft_printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg);
 	g_client.msg.message = ft_calloc((g_client.msg.size_msg + 1), 1);
 	if (g_client.msg.message == NULL)
-	ft_print_error("Malloc allocation failed");
+		ft_print_error("Malloc allocation failed");
 	g_client.getting_header = 0;
 	g_client.getting_msg = 1;
 	(*i) = 0;
-	
 }
 
 /**
@@ -70,7 +69,7 @@ int	lost_signal(int sender_pid, int signum, int *i, void *context)
 void	handle_header(int *i, int signum)
 {
 	const int	bit_value = get_bit_value(signum);
-	
+
 	if ((*i) < HEADER_SIZE)
 	{
 		g_client.msg.size_msg |= (bit_value << (HEADER_SIZE - 1 - (*i)));
@@ -97,8 +96,8 @@ void	handle_msg(int *i, int signum)
 
 	if (*i % 8 < 8)
 	{
-	char_value |= (bit_value << (7 - (*i % 8)));
-	(*i)++;
+		char_value |= (bit_value << (7 - (*i % 8)));
+		(*i)++;
 	}
 	if (*i % 8 == 0)
 	{
@@ -132,7 +131,7 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	static int	i;
 
-	(void)context;	
+	(void)context;
 	info->si_pid = lost_signal(info->si_pid, signum, &i, context);
 	if (info->si_pid == getpid())
 		ft_print_error("Proceso propio");
@@ -142,13 +141,15 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 		pong(g_client.client_pid);
 		return ;
 	}
-	if (g_client.actual_pid	!= g_client.client_pid)
+	if (g_client.actual_pid != g_client.client_pid)
 		return ;
 	if (g_client.getting_header == 1)
 		handle_header(&i, signum);
 	else if (g_client.getting_msg == 1)
 		handle_msg(&i, signum);
-	else if(g_client.client_pid != 0 && (signum == SIGUSR1 || signum == SIGUSR2))
-	       	kill(g_client.client_pid, SIGNAL_RECEIVED);
+	else if (g_client.client_pid != 0
+		&& (signum == SIGUSR1 || signum == SIGUSR2))
+	{
+		kill(g_client.client_pid, SIGNAL_RECEIVED);
+	}
 }
-

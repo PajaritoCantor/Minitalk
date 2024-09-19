@@ -18,11 +18,11 @@
 #define SERVER_READY SIGUSR1
 #define SERVER_BUSY SIGUSR2
 
-t_global g_server;
+t_global	g_server;
 
-void    handler(int signum)
+void	handler(int signum)
 {
-         (void)signum;
+	(void)signum;
 }
 /**
 * @Envía el tamaño y el contenido del mensaje,
@@ -57,7 +57,7 @@ void	ping_handler(int signum, siginfo_t *info, void *context)
 		g_server.is_ready = 0;
 		printf("Servidor no listo (SIGUSR2 recibido)\n");
 	}
-}	
+}
 
 void	handle_timeouts(int pid)
 {
@@ -74,41 +74,41 @@ void	handle_timeouts(int pid)
 	}
 }
 
-int ping	(int pid)
+int	ping(int pid)
 {
-    struct sigaction sa;
+	struct sigaction	sa;
 
-    printf("Configurando ping para el servidor con PID: %d\n", pid);
-    sa.sa_flags = SA_SIGINFO;
-    sa.sa_sigaction = ping_handler;
-    g_server.pid = pid;
-    g_server.is_ready = 0;
-    sigaction(SIGUSR1, &sa, NULL);
-    sigaction(SIGUSR2, &sa, NULL);
-    handle_timeouts(pid);
-    printf("Server ready: %d\n", g_server.is_ready);
-    return (g_server.is_ready);
+	printf("Configurando ping para el servidor con PID: %d\n", pid);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = ping_handler;
+	g_server.pid = pid;
+	g_server.is_ready = 0;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+	handle_timeouts(pid);
+	printf("Server ready: %d\n", g_server.is_ready);
+	return (g_server.is_ready);
 }
 
-int main	(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-    (void)argc, (void)argv;
-    int msg_len;
-    t_info data;
-    
-    printf("Número de argumentos recibidos: %d\n", argc);
-    parser(argc, argv);
-    init_data(argv, &data);
-    if (ping(data.server_pid) == 0) {
-        printf("El servidor no está listo.\n");
-        return (0);
-    }
-    msg_len = ft_strlen(argv[2]);
-    printf("MSG_LEN: [%d]\n", msg_len);
-    send_signals(&msg_len, 32, &data);
-    printf("Enviando mensaje...\n");
-    send_message(data.message, &data);
-    printf("Mensaje enviado correctamente\n");
-    return (0);
-}
+	int		msg_len;
+	t_info	data;
 
+	(void)argc, (void)argv;
+	printf("Número de argumentos recibidos: %d\n", argc);
+	parser(argc, argv);
+	init_data(argv, &data);
+	if (ping(data.server_pid) == 0)
+	{
+		printf("El servidor no está listo.\n");
+		return (0);
+	}
+	msg_len = ft_strlen(argv[2]);
+	printf("MSG_LEN: [%d]\n", msg_len);
+	send_signals(&msg_len, 32, &data);
+	printf("Enviando mensaje...\n");
+	send_message(data.message, &data);
+	printf("Mensaje enviado correctamente\n");
+	return (0);
+}

@@ -14,11 +14,10 @@
 
 int	get_state(int x, int y)
 {
-	const int	states[][2] =
-	{
-		{1, 2},
-		{1, 1},
-		{1, 2},
+	const int	states[][2] = {
+	{1, 2},
+	{1, 1},
+	{1, 2}
 	};
 
 	return (states[x][y]);

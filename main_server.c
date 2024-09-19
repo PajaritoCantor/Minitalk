@@ -22,7 +22,6 @@
 
 void	keep_server_up(void)
 {
-	
 	while (1)
 	{
 		sleep(1);
@@ -55,7 +54,7 @@ int	pong(int pid)
 int	main(void)
 {
 	struct sigaction	sa;
-	pid_t			server_pid;
+	pid_t				server_pid;
 
 	ft_memset(&g_client, 0, sizeof(t_global));
 	printf("Memoria a cero\n");

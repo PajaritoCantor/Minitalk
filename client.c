@@ -110,16 +110,14 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 	{
 		if (value & (1ULL << i))
 		{
-			//ft_printf("Enviando bit 1 al servidor\n");
 			send_signal(info->server_pid, CHAR_1);
 		}
 		else
 		{
-			//ft_printf("Enviando bit 0 al servidor\n");
 			send_signal(info->server_pid, CHAR_0);
 		}
 		i--;
-		usleep (500);
+		usleep (1000 * 1000);
 	}
 }
 
