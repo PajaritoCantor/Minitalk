@@ -281,6 +281,49 @@ Una tabla de estados es una herramienta común en la programación que se usa en
   - La función también configura el **signal_handler** para manejar señales entrantes durante el proceso de envío. 
 
 
+**Server**
+
+	void	keep_server_up(void)
+	{
+		while (1)
+		{
+			sleep(1);
+		}
+	}
+
+	int	get_bit_value(int signum)
+	{
+		if (signum == SIGUSR1)
+			return (0);
+		return (1);
+	}
+
+	int	pong(int pid)
+	{
+		kill(pid, SERVER_READY);
+		g_client.actual_pid = pid;
+		g_client.getting_header = 1;
+		return (EXIT_SUCCESS);
+	}
+
+	int	main(void)
+	{
+		struct sigaction	sa;
+		pid_t				server_pid;
+	
+		ft_memset(&g_client, 0, sizeof(t_global));
+		server_pid = getpid();
+		ft_printfd(1, "Server PID: %d\n", server_pid);
+		sa.sa_flags = SA_SIGINFO;
+		sa.sa_sigaction = signal_handler;
+		sigaction(SIGUSR1, &sa, NULL);
+		sigaction(SIGUSR2, &sa, NULL);
+		keep_server_up();
+		return (0);
+	}
+
+* Se inicializa la estructura **g_client** y se obtiene el **PID** del **server**.
+* Se configura **sigaction** para manejar
 
 
 
