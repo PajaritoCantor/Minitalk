@@ -65,14 +65,12 @@ void	init_data(char **argv, t_info *data);
 void	send_signal(pid_t pid, int signal);
 void	send_signals(void *data, size_t bit_length, t_info *info);
 void	send_message(char *str, t_info *data);
-int		ping(int pid);
-
+void	signal_handler(int signum, siginfo_t *info, void *context);
 // server
 void	reserve_memory_for_msg(int *i);
 int		lost_signal(int sender_pid, int signum, int *i, void *context);
 void	handle_header(int *i, int signum);
 void	handle_msg(int *i, int signum);
-void	signal_handler(int signun, siginfo_t *info, void *context);
 void	handle_timeouts(int pid);
 void	parser(int argc, char **argv);
 void	evaluate(const char *str);

@@ -26,7 +26,7 @@ t_global	g_client;
 */
 void	reserve_memory_for_msg(int *i)
 {
-	ft_printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg);
+	printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg);
 	g_client.msg.message = ft_calloc((g_client.msg.size_msg + 1), 1);
 	if (g_client.msg.message == NULL)
 		ft_print_error("Malloc allocation failed");
@@ -107,7 +107,7 @@ void	handle_msg(int *i, int signum)
 	}
 	if (*i / 8 == g_client.msg.size_msg)
 	{
-		printf("message: [%s]\n", g_client.msg.message);
+		ft_printf("message: [%s]\n", g_client.msg.message);
 		free(g_client.msg.message);
 		ft_bzero(&g_client, sizeof(g_client));
 		g_client.getting_header = 1;
@@ -134,7 +134,7 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 	(void)context;
 	info->si_pid = lost_signal(info->si_pid, signum, &i, context);
 	if (info->si_pid == getpid())
-		ft_print_error("Proceso propio");
+		ft_print_error("own process");
 	g_client.client_pid = info->si_pid;
 	if (g_client.actual_pid == 0)
 	{

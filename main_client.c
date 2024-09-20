@@ -20,10 +20,6 @@
 
 t_global	g_server;
 
-void	handler(int signum)
-{
-	(void)signum;
-}
 /**
 * @Envía el tamaño y el contenido del mensaje,
 * desde client hasta server.
@@ -36,7 +32,6 @@ void	handler(int signum)
 void	ping_handler(int signum, siginfo_t *info, void *context)
 {
 	(void)signum, (void)context, (void)info;
-	printf("Señal recibida de PID: %d\n", info->si_pid);
 	if (info->si_pid == getpid())
 	{
 		ft_printfd(2, "Error: Own process\n");
@@ -45,18 +40,12 @@ void	ping_handler(int signum, siginfo_t *info, void *context)
 	if (info->si_pid != g_server.pid)
 	{
 		ft_printfd(2, "Error: Unexpected pid in ping_handler\n");
-		return ;
+		exit(1);
 	}
 	if (signum == SERVER_READY)
-	{
 		g_server.is_ready = 1;
-		printf("Servidor listo (SIGUSR1 recibido)\n");
-	}
 	if (signum == SERVER_BUSY)
-	{
 		g_server.is_ready = 0;
-		printf("Servidor no listo (SIGUSR2 recibido)\n");
-	}
 }
 
 void	handle_timeouts(int pid)
@@ -67,7 +56,7 @@ void	handle_timeouts(int pid)
 	while (++i < RETRY_TIMES)
 	{
 		kill(pid, SIGUSR1);
-		ft_printf("Esperando respuesta del servidor\n");
+		ft_printf("Awaiting server response\n");
 		sleep(RETRY_TIME);
 		if (g_server.is_ready == 1)
 			break ;
@@ -78,7 +67,6 @@ int	ping(int pid)
 {
 	struct sigaction	sa;
 
-	printf("Configurando ping para el servidor con PID: %d\n", pid);
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = ping_handler;
 	g_server.pid = pid;
@@ -86,7 +74,7 @@ int	ping(int pid)
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	handle_timeouts(pid);
-	printf("Server ready: %d\n", g_server.is_ready);
+	ft_printf("Server ready: %d\n", g_server.is_ready);
 	return (g_server.is_ready);
 }
 
@@ -96,19 +84,15 @@ int	main(int argc, char **argv)
 	t_info	data;
 
 	(void)argc, (void)argv;
-	printf("Número de argumentos recibidos: %d\n", argc);
 	parser(argc, argv);
 	init_data(argv, &data);
 	if (ping(data.server_pid) == 0)
-	{
-		printf("El servidor no está listo.\n");
 		return (0);
-	}
 	msg_len = ft_strlen(argv[2]);
-	printf("MSG_LEN: [%d]\n", msg_len);
+	ft_printf("MSG_LEN: [%d]\n", msg_len);
 	send_signals(&msg_len, 32, &data);
-	printf("Enviando mensaje...\n");
+	ft_printf("Sending\n")
 	send_message(data.message, &data);
-	printf("Mensaje enviado correctamente\n");
+	
 	return (0);
 }

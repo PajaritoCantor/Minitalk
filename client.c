@@ -27,15 +27,13 @@
 void	init_data(char **argv, t_info *data)
 {
 	ft_memset(data, 0, sizeof(t_info));
-	ft_printf("Inicializando datos...\n");
-	data->client_pid = getpid();
-	ft_printf("Obteniendo PID del client: %d\n", data->client_pid);
 	data->server_pid = ft_atoi_limits(argv[1]);
-	ft_printf("Convirtiendo PID del servidor: %s\n", argv[1]);
+	data->client_pid = getpid();
+	ft_printfd(2, "PID CLIENT %d\n", data->client_pid);
 	data->message = argv[2];
-	ft_printf("Mensaje asignado: %s\n", data->message);
+	ft_printf("Mensaje asignado: %s\n ", argv[1]);
 	if (data->server_pid == 0)
-		ft_print_error("PID del servidor es inválido.");
+		ft_print_error("BAD_SIGNAL");
 }
 
 /**
@@ -45,8 +43,8 @@ void	init_data(char **argv, t_info *data)
  * @param context = Contexto del manejador de señal.
  *
  * Este manejador de señales se activa
- * cuando se recibe una señal específica.
- */
+ * cuando se recibe una señal específica. */
+ 
 void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	(void)signum;
@@ -61,8 +59,8 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 		ft_printf("SIGUSR1 sig received: Msg processed by the server:\n");
 	}
 }
+/*
 
-/**
 * @brief Envía una señal a un proceso específico utilizando 'kill()'.
 * @param pid = El PID del proceso destino
 * @param signal = Señal que se desea enviar (SIGUSR1 o SIGUSR2).
@@ -72,6 +70,7 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 * muestra un mensaje de error y termina el programa. 
 * La información sobre el envío se imprime en la consola.
 */
+
 void	send_signal(pid_t pid, int signal)
 {
 	if (kill(pid, signal))
@@ -81,7 +80,7 @@ void	send_signal(pid_t pid, int signal)
 	}
 }
 
-/**
+/*
 * @brief envía los bits de un valor como señales al servidor.
 *
 * Esta función toma un valor (de 8 o 32 bits) y lo envía al servidor bit a bit.
@@ -95,6 +94,7 @@ void	send_signal(pid_t pid, int signal)
 * @param bit_length Longitud en bits del valor a enviar.
 * @param info Puntero a la estructura t_info con la información del servidor.
 */
+
 void	send_signals(void *data, size_t bit_length, t_info *info)
 {
 	int					i;
@@ -117,7 +117,7 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 			send_signal(info->server_pid, CHAR_0);
 		}
 		i--;
-		usleep (1000 * 1000);
+		usleep (500 * 500);
 	}
 }
 
