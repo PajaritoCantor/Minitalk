@@ -339,6 +339,14 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 - **Entradas/Acciones:** Son eventos o inputs que provocan un cambio de estado.
 - **Transiciones:** Definen cómo el sistema cambia de un estado a otra en función de las entradas.
 
+## sigaction
+
+La estructura sigaction es utilizada para definir cómo un proceso maneja señales específicas. Es una estructura que contiene información sobre cómo manejar una señal. Los miembros más importantes de esta estructura son:
+
+**sa_handler o sa_sigaction:** Aquí puedes especificar una función que será llamada cuando una señal sea recibida.
+**sa_flags:** Establece ciertas opciones sobre cómo se debe manejar la señal (por ejemplo, si se debe usar el manejador de señales extendido o no).
+**sa_mask:** Define qué otras señales deben bloquearse mientras se está ejecutando el manejador de señales.
+
 ## sa_flags
 
 El campo s**a_flags** en la estructura **sigaction** es un conjunto de opciones que modifican el comportamiento del **manejador de señales**. Algunas de las banderas más comunes que se pueden configurar en sa_flags incluyen:
@@ -356,11 +364,6 @@ El campo s**a_flags** en la estructura **sigaction** es un conjunto de opciones 
 **SA_RESETHAND:** Restaura el comportamiento por defecto de la señal después de que esta haya sido manejada una vez, es decir, después de que se ejecute el manejador, la señal vuelve a su comportamiento original.
 
 **SA_NOCLDSTOP:** Impide que se genere una señal SIGCHLD cuando un proceso hijo se detiene o continúa (solo relevante para SIGCHLD).
-
-## SA_SIGINFO
-
-* Es una bandera utilizada en el contexto de la función ***sigaction*** para especificar cómo debe manejarse unaa señal en un programa C. Es parte del **estándar POSIX***. 
-* Su propósito es indicar que se desea usar una función manejadora de señales más avanzada que provea información adicional sobre la señal, en lugar de solo usar un simple manejador de señales (es decir, solo pasando el número de la señal).
 
   
       void handler(int signum, siginfo_t * info, void  * context)
