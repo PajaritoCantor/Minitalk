@@ -199,7 +199,7 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 
 * **sa_sigaction = ping_handler:** Aquí se asigna la función **ping_handler** como el **manejador de señales** avanzado. Esta función se invocará cuando el programa reciba una **señal**, y debido a la activación de la bandera **SA_SIGINFO**, el manejador podrá recibir información adicional sobre la señal a través de los parámetros **siginfo_t * info** y **void * context**.
 
-	void ping_handler(int signum, siginfo_t * info, void * context): 
+		void ping_handler(int signum, siginfo_t * info, void * context): 
  
 - **int signum:** Es el número de la señal recibidaa (como SIGUSR1 o SIGUSR2).
 **siginfo_t * info:** contiene información adicional sobre la señal, como el PID del proceso que la envió.
@@ -261,12 +261,12 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 - Usa **send_signal(pid_t pid, int signal)** para envíar **señales** al proceso del **server** utilizando **kill()**. Dependiendo del **bit**, envía **SIGUSR1** o **SIGUSR2**.
 - Se usa **usleep()** para hacer una pequeña pausa entre el envío de cada **bit**, permitiendo que el **server** procese las señales.
 
-**send_message(data.message, &data);**
+		**send_message(data.message, &data);**
 
-	void	send_message(char *str, t_info *data)
-	{
-		struct sigaction	sa;
-		int					i;
+		void	send_message(char *str, t_info *data)
+		{
+			struct sigaction	sa;
+			int					i;
 
 		sa.sa_flags = SA_SIGINFO;
 		sa.sa_sigaction = signal_handler;
@@ -274,37 +274,23 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 		i = 0;
 		while (str[i])
 			send_signals(&str[i++], 8, data);
-	}
+		}
 
 * **Después de enviar la longitud del mensaje, se envía la longitud del mensaje en sí:**
   - **send_message** toma cada carácter del **message**, lo convierte a **8 bits** y llama a **send_signals()** para enviar esos **bits** uno por uno.
-  - La función también configura el **signal_handler** para manejar señales entrantes durante el proceso de envío. 
+  - La función también configura el **client_signal_handler** para manejar señales entrantes durante el proceso de envío.
 
-
-**Server**
-
-	void	keep_server_up(void)
-	{
-		while (1)
+		void	client_signal_handler(int signum, siginfo_t *info, void *context)
 		{
-			sleep(1);
+			(void)signum;
+			(void)info;
+			(void)context;
 		}
-	}
 
-	int	get_bit_value(int signum)
-	{
-		if (signum == SIGUSR1)
-			return (0);
-		return (1);
-	}
+* Esta función aquí no tiene ninguna funcionalidad más allá de **recibir** una **señal** y **"silenciar"** los parámetros que se le pasan.
+  
 
-	int	pong(int pid)
-	{
-		kill(pid, SERVER_READY);
-		g_client.actual_pid = pid;
-		g_client.getting_header = 1;
-		return (EXIT_SUCCESS);
-	}
+# Server
 
 	int	main(void)
 	{
@@ -322,16 +308,32 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 		return (0);
 	}
 
-* **struct sigaction sa:** Es una estructura definida por POSIX que se utiliza para especificar cómo un proceso debería manejar una señal específica. La estructura contiene varios campos que configuran el comportamiento del manejador de señales.
-* **pid_t server_pid;** **pid_t** es un tipo de dato que se utiliza para representar un ID de proceso (PID) en sistemas Unix y Linux. Cada proceso en el sistemaa tiene un PID único que lo identifica.
+Es una estructura definida por POSIX que se utiliza para especificar cómo un proceso debería manejar una señal específica. La estructura contiene varios campos que configuran el comportamiento del manejador de señales.
 
+	**struct sigaction sa:**
+
+
+Es un tipo de dato que se utiliza para representar un ID de proceso (PID) en sistemas Unix y Linux. Cada proceso en el sistemaa tiene un PID único que lo identifica.
+
+	**pid_t server_pid;** **pid_t** 
   
-*  **ft_memset(&g_client, 0, sizeof(t_global));** Esta línea inicializa la estructura global **g_client** a cero (**ft_memset**).
-*  **server_pid = getpid();** Se obtiene el **PID** del proceso actual(**server**) usando **get_pid** y almacenándolo en la variable **server_pid**.
+Esta línea inicializa la estructura global **g_client** a cero (**ft_memset**).
+
+	**ft_memset(&g_client, 0, sizeof(t_global));**
+ 
+Se obtiene el **PID** del proceso actual(**server**) usando **get_pid** y almacenándolo en la variable **server_pid**.
+
+	**server_pid = getpid();**
   
-* **sa.sa_flags = SA_SIGINFO:** Esta línea establece la bandera **SA_SIGINFO** en el campo **sa_flags** de la **struct sigaction sa** en lugar de la más simple **sa_handler**
-* **sa.sa_sigaction = server_signal_handler;** Se asigna la función **server_signal_handler** como el manejador de señales que será invocado cuando se reciba una señal.
-	- **sa_sigaction** permite manejar señales con más información, por ejemplo, de qué proceso provino la señal. Es un puntero a la función **server_signal_handler** que se ejecutará cuando se reciba una señal.
+Esta línea establece la bandera **SA_SIGINFO** en el campo **sa_flags** de la **struct sigaction sa** en lugar de la más simple **sa_handler**
+
+	**sa.sa_flags = SA_SIGINFO:**
+ 
+Se asigna la función **server_signal_handler** como el manejador de señales que será invocado cuando se reciba una señal.
+
+	**sa.sa_sigaction = server_signal_handler;**
+	
+ - **sa_sigaction** permite manejar señales con más información, por ejemplo, de qué proceso provino la señal. Es un puntero a la función **server_signal_handler** que se ejecutará cuando se reciba una señal. Esta es la función **manejadora de señales** del **server**.
 
 			void	server_signal_handler(int signum, siginfo_t *info, void *context)
 			{
@@ -360,45 +362,136 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 				}
 			}	
 
-* Esta es la función **manejadora de señales** del **server**.
-  - **signum** es el número de la señal recibida(puede ser **SIGUSR1** o **SIGUSR2**).
+
+  - **signum** es el número de la señal recibida (puede ser **SIGUSR1** o **SIGUSR2**).
   - **info** es un puntero a una estructura **siginfo_t** que contiene información adicional sobre la señal, como el **PID** del proceso que envió la **señal**.
   - **context** es información sobre el contexto del procesador cuando ocurrió la señal(no se utiliza aquí).
 
-* **static int i;**
-- Declara una **variable estática i**, que retiene su valor entre llamadas consecutivas a la función. Esta variable puede estar actuando como un contador o índice para seguir el progreso de la recepción de un **mensaje**.
+* **static int i;** Declara una **variable estática i**, que retiene su valor entre llamadas consecutivas a la función. Esta variable puede estar actuando como un contador o índice para seguir el progreso de la recepción de un **mensaje**.
 
-* **info->si_pid = lost_signal(info->si_pid, signum, &i, context);** Esta función se utiliza para recuperar el **PID** **(Process ID)** del proceso emisor de una señal. Si el **PID** proporcionando por el sistema es **0**, la función asigna el **PID** almacenado previamente en **g_client.actual_pid** como el emisor, asegurando así que el servidor pueda continuar el proceso de comunicación con el **client** correcto.
+Esta función se utiliza para recuperar el **PID** **(Process ID)** del proceso emisor de una señal.
+	
+ 	**info->si_pid = lost_signal(info->si_pid, signum, &i, context);** 
 
-		int	lost_signal(int sender_pid, int signum, int *i, void *context)
-		{
-			(void)context;
-			if (sender_pid == 0 && (signum == SIGUSR1 || signum == SIGUSR2))
-			{
-				printf("i [%d] client: %d con señal: %d\n", (*i), sender_pid, signum);
-				sender_pid = g_client.actual_pid;
-			}
-			return (sender_pid);
-		}
+ - Si el **PID** proporcionando por el sistema es **0**, la función asigna el **PID** almacenado previamente en **g_client.actual_pid** como el emisor, asegurando así que el servidor pueda continuar el proceso de comunicación con el **client** correcto.
+  
+	
+			int	lost_signal(int sender_pid, int signum, int *i, void *context)
+				{
+					(void)context;
+					if (sender_pid == 0 && (signum == SIGUSR1 || signum == SIGUSR2))
+					{
+						printf("i [%d] client: %d con señal: %d\n", (*i), sender_pid, signum);
+						sender_pid = g_client.actual_pid;
+					}
+					return (sender_pid);
+				}
 * **Parámetros:**
+
   - * **sender_pid:** El **PID** del proceso que envió la **señal**.
     * **signum**: El número de la **señal** que se ha recibido (ya sea **SIGUSR1** o **SIGUSR2**.)
     * ***i** Es un puntero a un entero, contador de señales o índice para rastrear el progreso en el proceso de recepción de datos.
     * **context:** Un parámetro adicional que no se utiliza en esta función, por lo que se anua co **(void)context**.
+      
+* Si **(sender_pid == 0** y la **señal** recibida es **SIGUSR1** o **SIGUSR2**, se ejecutará el bloque de código dentro del **if**.
+	- Que **sender_pid** sea igual a **0**, puede ocurrir si por alguna razón, el sistema no proporciona el **PID** del **proceso emisor de la señal**.
+
+Si **sender_pid** es 0, se asigna **g_client.actual_pid** a **sender_pid**. Esto significa que si no se puede determinar el **PID** del proceso emisor, el **server** utiliza el **actual_pid** almacenado en la estructura **g_client** para identificar al client. 
+
+	**sender_pid = g_client.actual_pid;**
+
+La función devuelve el **sender_pid**, ya sea el que originalmente se proporcionó o el que se obtuvo de **g_client.actual_pid** si el original era **0**.
+
+	**return (sender_pid):** 
+
+ 
+Vuelve a **server_signal_handler**. 
+
+Se verifica si el proceso que envió la señal es el mismo **server**.
+
+	* **if (info->si_pid == getpid()):** 
+ 
+- El **server** guarda el **PID** del **client** que envió la **señal** en la variable gobal **g_client.client_pid**. 
+	- Esto asegura que el **server** recuerde quien está enviando las **señales** para el resto del procesammiento.
+
+			* **g_client.client_pid = info->si_pid;** 
+
+*  Si **g_client.actual_pid** es 0, significa que el **server** no ha establecido aún una conexión firme con el **client**.
+	- En este caso, el **server** responde con **pong()** al **client**, que es una forma de **confirmmar que el cliente está conectado** y que el **server** está listo para recibir datos.
+
+			**if (g_client.actual_pid == 0)** 
+			{
+				pong(g_client.client_pid);
+				return ;
+			}
+
+La función **pong** es una forma de **confirmar la recepción de la señal del cliente por parte del servidor** y preparar al servidor para iniciar el proceso de comunicación con el **client**
+
+- Envía la señal **SIGUSR1** al **client** para informarle que el **server** está listo para procesar el mensaje. 
+
+  		**kill(pid, SERVER_READY):**
+
+- Almacena el **pid** del **client** en la variable global **g_client.actual_pid**, que es parte de la estructura **g_client**. Esto le permite al servidor "recordar" con qué cliente está interactuando durante la sesión actual. 
+
+		**g_client.actual_pid = pid:**
+
+- Esto indica que el **server** ha comenzado a recibir el mensaje y está esperando la primera parte de él (**header**).
+  	- Se utiliza para gestionar el estado del servidor y asegurarse de que los datos recibidos se procesen de manera ordenada (primero el **header**, luego el cuerpo de **message**)
 
 
-* **sender_pid == 0:** El propósito de esta condición es manejar el caso en que el **sender_pid** sea igual a **0**, lo cual puede ocurrir si, por alguna razón, el sistema no proporciona el **PID** del **proceso emisor de la señal**.
-	- Si **sender_pid == 0** y la **señal** recibida es **SIGUSR1** o **SIGUSR2**, se ejecutará el bloque de código dentro del **if**. 
+* Esta condición verifica si el proceso **PID** del **client** actual es igual al **PID** del client que envió la señal. Si no coinciden, el **server** no hará nada y saldrá de la función. Esto asegura que el **server** solo procese señales del **client** con el que está interactuando activamente.
 
-**sender_pid = g_client.actual_pid;** si **sender_pid** es 0, se asigna **g_client.actual_pid** a **sender_pid**. Esto significa que si no se puede determinar el **PID** del proceso emisor, el **server** utiliza el **actual_pid** almacenado en la estructura **g_client** para identificar al client. 
+		**if (g_client.actual_pid != g_client.client_pid)
+			return ;**
+  
+Aquí, el **server** está esperando recibir la cabecera del **mensaje** (**getting_header == 1**), llama a la función **handler_header** para procesar las señales que forman el encabezado del mensaje. 
 
-**return (sender_pid):** La función devuelve el **sender_pid**, ya sea el que originalmente se proporcionó o el que se obtuvo de **g_client.actual_pid** si el original era **0**.
+	if (g_client.getting_header == 1)
+	    handle_header(&i, signum);
+
+**función void_handler**
+
+	void	handle_header(int *i, int signum)
+	{
+		const int	bit_value = get_bit_value(signum);
+	
+		if ((*i) < HEADER_SIZE)
+		{
+			g_client.msg.size_msg |= (bit_value << (HEADER_SIZE - 1 - (*i)));
+			(*i)++;
+		}
+		if ((*i) == HEADER_SIZE)
+			reserve_memory_for_msg(i);
+	}
 
 
-* **if (info->si_pid == getpid()):** Se verifica si el proceso que envió la señal es el mismo **server**.
-* **g_client.client_pid = info->si_pid;** El **server** guarda el **PID** del **client** que envió la **señal** en la variable gobal **g_client.client_pid**. Esto asegura que el **server** recuerde quien está enviando las **señales** para el resto del procesammiento.
-*  **if (g_client.actual_pid == 0)** si **g_client.actual_pid** es 0, significa que el **server** no ha establecido aún una conexión firme con el **client**.
-  - En este caso, el **server** 
+- Esta función convierte la señal recibida (signum) en un valor binario (0 o 1). Dependiendo de si la señal es SIGUSR1 o SIGUSR2, interpretamos si el bit de la señal es 0 o 1.
+
+		**get_bit_value(signum):**
+
+
+- Aquí se está construyendo el tamaño del mensaje (almacenado en size_msg) bit por bit. HEADER_SIZE es una constante que indica el número total de bits en el encabezado (probablemente 32 o 64 bits, dependiendo del tamaño de los mensajes).
+
+		**if ((* i) < HEADER_SIZE):** 
+
+-  Esta línea inserta el bit recibido en la posición correcta de size_msg, moviendo el valor recibido al lugar adecuado mediante un desplazamiento a la izquierda.
+
+		**g_client.msg.size_msg |= (bit_value << (HEADER_SIZE - 1 - ( *i))):** 
+
+		**( * i)++:** 
+
+Una vez que se han recibido todos los bits del encabezado (cuando el número de bits recibidos es igual a HEADER_SIZE), se llama a reserve_memory_for_msg para reservar la memoria necesaria para almacenar el mensaje.
+
+	**if (( * i) == HEADER_SIZE):***
+
+* Si el servidor ya ha procesado el encabezado y está esperando el mensaje (cuando **getting_msg == 1)**, llama a la función **handle_msg** para procesar las señales que contienen los bits del mensaje real.
+
+		* else if (g_client.getting_msg == 1)
+	    	handle_msg(&i, signum);
+
+
+
+
 
 
 
