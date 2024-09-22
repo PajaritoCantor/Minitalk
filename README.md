@@ -368,7 +368,7 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 * **static int i;**
 - Declara una **variable estática i**, que retiene su valor entre llamadas consecutivas a la función. Esta variable puede estar actuando como un contador o índice para seguir el progreso de la recepción de un **mensaje**.
 
-* **info->si_pid = lost_signal(info->si_pid, signum, &i, context);**
+* **info->si_pid = lost_signal(info->si_pid, signum, &i, context);** Esta función se utiliza para recuperar el **PID** **(Process ID)** del proceso emisor de una señal. Si el **PID** proporcionando por el sistema es **0**, la función asigna el **PID** almacenado previamente en **g_client.actual_pid** como el emisor, asegurando así que el servidor pueda continuar el proceso de comunicación con el **client** correcto.
 
 		int	lost_signal(int sender_pid, int signum, int *i, void *context)
 		{
@@ -397,8 +397,8 @@ Una tabla de estados es una herramienta común en la programación que se usa en
 
 * **if (info->si_pid == getpid()):** Se verifica si el proceso que envió la señal es el mismo **server**.
 * **g_client.client_pid = info->si_pid;** El **server** guarda el **PID** del **client** que envió la **señal** en la variable gobal **g_client.client_pid**. Esto asegura que el **server** recuerde quien está enviando las **señales** para el resto del procesammiento.
-*  **if (g_client.actual_pid == 0)** si **g_client.actual_pid** es 0, significa que el **server** no ha establecido aún una conexión firme con el cliente
-
+*  **if (g_client.actual_pid == 0)** si **g_client.actual_pid** es 0, significa que el **server** no ha establecido aún una conexión firme con el **client**.
+  - En este caso, el **server** 
 
 
 
