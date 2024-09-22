@@ -49,31 +49,28 @@ typedef struct s_global
 	volatile sig_atomic_t	is_ready;
 }	t_global;
 
-extern t_global					g_client;
+extern t_global					g_server;
 //client
-typedef struct s_info
+typedef struct s_data
 {
 	pid_t	client_pid;
 	pid_t	server_pid;
 	char	*message;
 }	t_info;
 
-extern t_global					g_server;
+extern t_global					g_client;
 
 // client
 void	init_data(char **argv, t_info *data);
 void	send_signal(pid_t pid, int signal);
 void	send_signals(void *data, size_t bit_length, t_info *info);
 void	send_message(char *str, t_info *data);
-void	signal_handler(int signum, siginfo_t *info, void *context);
-// server
-void	reserve_memory_for_msg(int *i);
-int		lost_signal(int sender_pid, int signum, int *i, void *context);
-void	handle_header(int *i, int signum);
-void	handle_msg(int *i, int signum);
-void	handle_timeouts(int pid);
+void	client_signal_handler(int signum, siginfo_t *info, void *context);
 void	parser(int argc, char **argv);
-void	evaluate(const char *str);
+int		ping(int pid);
+
+// server
+void	server_signal_handler(int signum, siginfo_t *info, void *context);
 void	keep_server_up(void);
 int		get_bit_value(int signum);
 int		pong(int pid);

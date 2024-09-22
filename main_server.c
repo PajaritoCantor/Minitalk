@@ -45,7 +45,11 @@ int	get_bit_value(int signum)
 
 int	pong(int pid)
 {
-	kill(pid, SERVER_READY);
+	if (kill(pid, SERVER_READY) < 0)
+	{
+		ft_print_error("Error al enviar SERVER_READY");
+		return EXIT_FAILURE;
+	}
 	g_client.actual_pid = pid;
 	g_client.getting_header = 1;
 	return (EXIT_SUCCESS);
@@ -60,7 +64,7 @@ int	main(void)
 	server_pid = getpid();
 	ft_printfd(1, "Server PID: %d\n", server_pid);
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = signal_handler;
+	sa.sa_sigaction = server_signal_handler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	keep_server_up();

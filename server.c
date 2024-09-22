@@ -13,28 +13,6 @@
 #include "minitalk.h"
 
 t_global	g_client;
-
-/**
-* @brief Reserva memoria para almacenar el mensaje 
-* basándose en el tamaño recibido.
-
-* Asigna memoria para el mensaje según el tamaño indicado 
-* por g_server.msg_size.
-
-* Si la asignación falla, imprime un mensaje
-* de error y sale del programa.
-*/
-void	reserve_memory_for_msg(int *i)
-{
-	printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg);
-	g_client.msg.message = ft_calloc((g_client.msg.size_msg + 1), 1);
-	if (g_client.msg.message == NULL)
-		ft_print_error("Malloc allocation failed");
-	g_client.getting_header = 0;
-	g_client.getting_msg = 1;
-	(*i) = 0;
-}
-
 /**
 * @brief Maneja el escenario de ṕerdida de señal.
 *
@@ -57,6 +35,26 @@ int	lost_signal(int sender_pid, int signum, int *i, void *context)
 	return (sender_pid);
 }
 
+/**
+* @brief Reserva memoria para almacenar el mensaje 
+* basándose en el tamaño recibido.
+
+* Asigna memoria para el mensaje según el tamaño indicado 
+* por g_server.msg_size.
+
+* Si la asignación falla, imprime un mensaje
+* de error y sale del programa.
+*/
+void	reserve_memory_for_msg(int *i)
+{
+	printf("SIZE_MSG: [%d]\n", g_client.msg.size_msg);
+	g_client.msg.message = ft_calloc((g_client.msg.size_msg + 1), 1);
+	if (g_client.msg.message == NULL)
+		ft_print_error("Malloc allocation failed");
+	g_client.getting_header = 0;
+	g_client.getting_msg = 1;
+	(*i) = 0;
+}
 /**
 * @brief Maneja la recepción del encabezado (tamaño del mensaje).
 *
@@ -126,8 +124,7 @@ void	handle_msg(int *i, int signum)
 * @param info Información adicional sobre la señal y el proceso que la envió.
 * @param context Puntero de contexto no utilizado.
 */
-
-void	signal_handler(int signum, siginfo_t *info, void *context)
+void	server_signal_handler(int signum, siginfo_t *info, void *context)
 {
 	static int	i;
 

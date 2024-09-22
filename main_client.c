@@ -56,7 +56,7 @@ void	handle_timeouts(int pid)
 	while (++i < RETRY_TIMES)
 	{
 		kill(pid, SIGUSR1);
-		ft_printf("Awaiting server response\n");
+		ft_printf("tic toc tic toc\n");
 		sleep(RETRY_TIME);
 		if (g_server.is_ready == 1)
 			break ;
@@ -91,7 +91,7 @@ int	main(int argc, char **argv)
 	msg_len = ft_strlen(argv[2]);
 	ft_printf("MSG_LEN: [%d]\n", msg_len);
 	send_signals(&msg_len, 32, &data);
-	ft_printf("Sending\n")
+	ft_printf("Sending\n");
 	send_message(data.message, &data);
 	
 	return (0);

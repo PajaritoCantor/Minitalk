@@ -31,7 +31,6 @@ void	init_data(char **argv, t_info *data)
 	data->client_pid = getpid();
 	ft_printfd(2, "PID CLIENT %d\n", data->client_pid);
 	data->message = argv[2];
-	ft_printf("Mensaje asignado: %s\n ", argv[1]);
 	if (data->server_pid == 0)
 		ft_print_error("BAD_SIGNAL");
 }
@@ -45,22 +44,13 @@ void	init_data(char **argv, t_info *data)
  * Este manejador de señales se activa
  * cuando se recibe una señal específica. */
  
-void	signal_handler(int signum, siginfo_t *info, void *context)
+void	client_signal_handler(int signum, siginfo_t *info, void *context)
 {
 	(void)signum;
 	(void)info;
 	(void)context;
-	if (signum == SIGUSR2)
-	{
-		ft_printf("SIGUSR2 sig received: Server error msg\n");
-	}
-	else if (signum == SIGUSR1)
-	{
-		ft_printf("SIGUSR1 sig received: Msg processed by the server:\n");
-	}
 }
 /*
-
 * @brief Envía una señal a un proceso específico utilizando 'kill()'.
 * @param pid = El PID del proceso destino
 * @param signal = Señal que se desea enviar (SIGUSR1 o SIGUSR2).
@@ -117,7 +107,7 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 			send_signal(info->server_pid, CHAR_0);
 		}
 		i--;
-		usleep (500 * 500);
+		usleep (10000);
 	}
 }
 
@@ -136,11 +126,9 @@ void	send_message(char *str, t_info *data)
 	int					i;
 
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = signal_handler;
+	sa.sa_sigaction = client_signal_handler;
 	sigaction(SIGUSR2, &sa, NULL);
 	i = 0;
-	ft_printf("Sending msg: %s server PID: %d\n", str, data->server_pid);
 	while (str[i])
 		send_signals(&str[i++], 8, data);
-	ft_printf("Mensaje enviado: %s\n", str);
 }
