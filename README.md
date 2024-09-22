@@ -449,7 +449,7 @@ Aquí, el **server** está esperando recibir la cabecera del **mensaje** (**gett
 	if (g_client.getting_header == 1)
 	    handle_header(&i, signum);
 
-**función void_handler**
+**función void_handle_header**
 
 	void	handle_header(int *i, int signum)
 	{
@@ -465,22 +465,21 @@ Aquí, el **server** está esperando recibir la cabecera del **mensaje** (**gett
 	}
 
 
-- Esta función convierte la señal recibida (signum) en un valor binario (0 o 1). Dependiendo de si la señal es SIGUSR1 o SIGUSR2, interpretamos si el bit de la señal es 0 o 1.
+- Esta función convierte la señal recibida **(signum)** en un valor **binario** (0 o 1). Dependiendo de si la **señal** es **SIGUSR1** o **SIGUSR2**, interpretamos si el **bit** de la **señal** es 0 o 1.
 
 		**get_bit_value(signum):**
 
+- Aquí se está construyendo el **tamaño del mensaje** (almacenado en **size_msg**) **bit** por **bit**.
+	- **HEADER_SIZE** es una constante que indica el número total de **bits** en el encabezado (probablemente **32** o **64** **bits**, dependiendo del **tamaño de los mensajes**).
 
-- Aquí se está construyendo el tamaño del mensaje (almacenado en size_msg) bit por bit. HEADER_SIZE es una constante que indica el número total de bits en el encabezado (probablemente 32 o 64 bits, dependiendo del tamaño de los mensajes).
+			**if ((* i) < HEADER_SIZE):** 
 
-		**if ((* i) < HEADER_SIZE):** 
-
--  Esta línea inserta el bit recibido en la posición correcta de size_msg, moviendo el valor recibido al lugar adecuado mediante un desplazamiento a la izquierda.
+-  Esta línea inserta el **bit** recibido en la posición correcta de **size_msg**, moviendo el valor recibido al lugar adecuado mediante un desplazamiento a la izquierda.
 
 		**g_client.msg.size_msg |= (bit_value << (HEADER_SIZE - 1 - ( *i))):** 
-
 		**( * i)++:** 
 
-Una vez que se han recibido todos los bits del encabezado (cuando el número de bits recibidos es igual a HEADER_SIZE), se llama a reserve_memory_for_msg para reservar la memoria necesaria para almacenar el mensaje.
+Una vez que se han recibido todos los **bits** del encabezado (cuando el número de **bits** recibidos es igual a **HEADER_SIZE**), se llama a **reserve_memory_for_msg** para reservar la memoria necesaria para almacenar el **mensaje**.
 
 	**if (( * i) == HEADER_SIZE):***
 
