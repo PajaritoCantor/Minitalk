@@ -500,21 +500,8 @@ El bucle **if ( * i % 8 < 8)** Indica que está procesando un carácter **bit** 
 
 Cuando ha recibido los **8 bits** completos de un carácter **(if (*i % 8 == 0))**, se almacena en la posición actual de **g_client.msg.message[msg_pos]**. Luego, se reinicia **char_value** para comenzar a formar el siguiente carácter.
 
-Cuando ha procesado todos los caracteres que corresponden al tamaño del mensaje (if (*i / 8 == g_client.msg.size_msg)), imprime el mensaje completo y libera la memoria asignada.
-También resetea el estado de la estructura g_client para esperar el siguiente mensaje (ft_bzero(&g_client, sizeof(g_client))).
-Estructura en el .h:
-El código de la función handle_msg parece consistente con las estructuras que has definido en tu archivo .h. Específicamente:
-
-Estructura t_msg:
-
-t_msg tiene un campo size_msg que guarda el tamaño del mensaje y un puntero message que es donde se almacena el contenido del mensaje. Esto es coherente con el uso de g_client.msg.message en handle_msg.
-Estructura t_global:
-
-En t_global, tienes campos como getting_header, getting_msg, y msg, que controlan el estado del mensaje y su procesamiento. Esto es coherente con cómo handle_msg manipula el proceso de recibir mensajes.
-
-
-
-
+Cuando ha procesado todos los caracteres que corresponden al tamaño del mensaje **(if ( * i / 8 == g_client.msg.size_msg))**, **imprime el mensaje completo** y **libera la memoria asignada.**
+También resetea el estado de la estructura **g_client** para esperar el siguiente mensaje **(ft_bzero(&g_client, sizeof(g_client))).**
 
 
 
@@ -568,6 +555,3 @@ El campo s**a_flags** en la estructura **sigaction** es un conjunto de opciones 
 **SA_NOCLDSTOP:** Impide que se genere una señal SIGCHLD cuando un proceso hijo se detiene o continúa (solo relevante para SIGCHLD).
 
   
-      void handler(int signum, siginfo_t * info, void  * context)
-
-Esta función recibe un **puntero** a la estructura **siginfo_t** que contiene información detallada sobre la **señal**, como el ***PID del proceso*** que envió la señal, **el tipo de señal**, y otra información relevante.
