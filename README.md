@@ -488,8 +488,29 @@ Una vez que se han recibido todos los **bits** del encabezado (cuando el número
 		* else if (g_client.getting_msg == 1)
 	    	handle_msg(&i, signum);
 
+**Función handle_msg**
 
+**char_value:** Almacena temporalmente los **bits** que se están recibiendo para formar un carácter.
+**msg_pos:** Almacena la posición actual en el array del mensaje **g_client.msg.message.**
 
+**const int bit_value = get_bit_value(signum);:** Esta línea convierte la señal recibida (que puede ser **SIGUSR1** o **SIGUSR2**) en un **bit**, usualmente **0** o **1**. Esto se hace usando la función **get_bit_value**.
+
+El bucle **if ( * i % 8 < 8)** Indica que está procesando un carácter **bit** a **bit**, porque un carácter tiene **8 bits**.
+**char_value |= (bit_value << (7 - ( * i % 8)));** Toma el valor del **bit (bit_value)** y lo desplaza a la posición correcta dentro del carácter. Luego, usa el operador **OR** para ensamblar el carácter.
+
+Cuando ha recibido los **8 bits** completos de un carácter **(if (*i % 8 == 0))**, se almacena en la posición actual de **g_client.msg.message[msg_pos]**. Luego, se reinicia **char_value** para comenzar a formar el siguiente carácter.
+
+Cuando ha procesado todos los caracteres que corresponden al tamaño del mensaje (if (*i / 8 == g_client.msg.size_msg)), imprime el mensaje completo y libera la memoria asignada.
+También resetea el estado de la estructura g_client para esperar el siguiente mensaje (ft_bzero(&g_client, sizeof(g_client))).
+Estructura en el .h:
+El código de la función handle_msg parece consistente con las estructuras que has definido en tu archivo .h. Específicamente:
+
+Estructura t_msg:
+
+t_msg tiene un campo size_msg que guarda el tamaño del mensaje y un puntero message que es donde se almacena el contenido del mensaje. Esto es coherente con el uso de g_client.msg.message en handle_msg.
+Estructura t_global:
+
+En t_global, tienes campos como getting_header, getting_msg, y msg, que controlan el estado del mensaje y su procesamiento. Esto es coherente con cómo handle_msg manipula el proceso de recibir mensajes.
 
 
 
