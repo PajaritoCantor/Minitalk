@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main_client.c                                      :+:      :+:    :+:   */
+/*   tic.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/29 11:48:42 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/04 20:51:43 by jurodrig         ###   ########.fr       */
+/*   Created: 2024/09/24 20:24:58 by jurodrig          #+#    #+#             */
+/*   Updated: 2024/09/24 23:10:53 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "client.h"
 
 #define RETRY_TIMES 30
 #define RETRY_TIME 2
@@ -20,16 +20,7 @@
 
 t_global	g_server;
 
-/**
-* @Envía el tamaño y el contenido del mensaje,
-* desde client hasta server.
-* Se comunica con el server enviando
-* un flujo de señales que el servidor puede interpretar como bits,
-* y luego reconstruir estos bits
-* en un mensaje coherente
-**/
-
-void	ping_handler(int signum, siginfo_t *info, void *context)
+void	tic_handler(int signum, siginfo_t *info, void *context)
 {
 	(void)signum, (void)context, (void)info;
 	if (info->si_pid == getpid())
@@ -40,7 +31,7 @@ void	ping_handler(int signum, siginfo_t *info, void *context)
 	if (info->si_pid != g_server.pid)
 	{
 		ft_printfd(2, "Error: Unexpected pid in ping_handler\n");
-		exit(1);
+		return ;
 	}
 	if (signum == SERVER_READY)
 		g_server.is_ready = 1;
@@ -56,19 +47,19 @@ void	handle_timeouts(int pid)
 	while (++i < RETRY_TIMES)
 	{
 		kill(pid, SIGUSR1);
-		ft_printf("tic toc tic toc\n");
+		ft_printf("Waiting response from server\n");
 		sleep(RETRY_TIME);
 		if (g_server.is_ready == 1)
 			break ;
 	}
 }
 
-int	ping(int pid)
+int	tic(int pid)
 {
 	struct sigaction	sa;
 
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = ping_handler;
+	sa.sa_sigaction = tic_handler;
 	g_server.pid = pid;
 	g_server.is_ready = 0;
 	sigaction(SIGUSR1, &sa, NULL);
@@ -76,23 +67,4 @@ int	ping(int pid)
 	handle_timeouts(pid);
 	ft_printf("Server ready: %d\n", g_server.is_ready);
 	return (g_server.is_ready);
-}
-
-int	main(int argc, char **argv)
-{
-	int		msg_len;
-	t_info	data;
-
-	(void)argc, (void)argv;
-	parser(argc, argv);
-	init_data(argv, &data);
-	if (ping(data.server_pid) == 0)
-		return (0);
-	msg_len = ft_strlen(argv[2]);
-	ft_printf("MSG_LEN: [%d]\n", msg_len);
-	send_signals(&msg_len, 32, &data);
-	ft_printf("Sending\n");
-	send_message(data.message, &data);
-	
-	return (0);
 }

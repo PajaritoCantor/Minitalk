@@ -1,65 +1,84 @@
-# **************************************************************************** #
-#                                                                              #
+
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jurodrig <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: psegura- <psegura-@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/08/29 12:19:21 by jurodrig          #+#    #+#              #
-#    Updated: 2024/08/30 12:53:01 by jurodrig         ###   ########.fr        #
+#    Created: 2023/01/06 16:12:27 by psegura-          #+#    #+#              #
+#    Updated: 2024/08/17 00:15:24 by psegura-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+MAKEFLAGS += --no-print-directory
+
 ### Colors ###
-GREEN   =   \033[0;32m
-RED     =   \033[0;31m
-CYAN    =   \033[0;36m
-WHITE   =   \033[0m
 
-NAME_C  =   client
-NAME_S  =   server
+GREEN	=	\033[1;32m
+RED		=	\033[0;31m
+CYAN	=	\033[0;36m
+WHITE	=	\033[0m
 
-CLIENT_SRC  =   client.c main_client.c miniutils.c
-SERVER_SRC  =   server.c main_server.c
+NAME_C = client
+NAME_S = server
 
-SERVER_OBJ  =	$(SERVER_SRC:.c=.o)	
-CLIENT_OBJ  =   $(CLIENT_SRC:.c=.o)
+SRCS_SHARED = $(addprefix shared/, $(SHARED))
 
-CC      =   gcc
+CLIENT =							\
+			client/main.c			\
+			client/client.c			\
+			client/parser.c			\
+			client/tic.c			\
+			$(SRCS_SHARED)			\
+		
+SRCS_C = $(addprefix srcs/, $(CLIENT))
 
-CFLAGS  =   -Wall -Wextra -Werror
-CFLAGS  +=  -I.
-CFLAGS  +=  -I./library
+SERVER =							\
+			server/main.c			\
+			server/server.c			\
+			server/toc.c			\
+			$(SRCS_SHARED)			\
 
-LIBFT   =   ./library/libft.a
+SRCS_S = $(addprefix srcs/, $(SERVER))
 
-all:    $(NAME_C) $(NAME_S)
+OBJS_C = $(SRCS_C:%.c=objs/%.o)
+OBJS_S = $(SRCS_S:%.c=objs/%.o)
 
-$(NAME_C): $(CLIENT_OBJ) $(LIBFT)
-	@$(CC) $(CFLAGS) $(CLIENT_OBJ) $(LIBFT) -o $(NAME_C)
-	@echo "$(GREEN)CLIENT READY$(WHITE)"
+LIB = libft/libft.a
 
-$(NAME_S): $(SERVER_OBJ) $(LIBFT)
-	@$(CC) $(CFLAGS) $(SERVER_OBJ) $(LIBFT) -o $(NAME_S)
-	@echo "$(CYAN)SERVER READY$(WHITE)"
+CC = cc
 
-%.o: %.c
+CFLAGS	 = -Wall -Wextra -Werror
+CFLAGS	+= -I inc
+CFLAGS	+= -I libft
+
+all: $(NAME_C) $(NAME_S)
+
+$(NAME_C): objs $(OBJS_C)
+	@make -C libft
+	@$(CC) $(CFLAGS) $(OBJS_C) $(LIB) -o $(NAME_C)
+	@echo "$(RED)CLIENT READY$(WHITE)"
+
+$(NAME_S): objs $(OBJS_S)
+	@make -C libft
+	@$(CC) $(CFLAGS) $(OBJS_S) $(LIB) -o $(NAME_S)
+	@echo "$(GREEN)SERVER READY$(WHITE)"
+
+objs:
+	@mkdir -p objs/srcs/server objs/srcs/client
+
+objs/%.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(LIBFT):
-	@make -C library
-
 clean:
-	@make -C library clean
-	@rm -f $(CLIENT_OBJ) $(SERVER_OBJ)
-	@echo "$(CYAN)Object files cleaned$(WHITE)"
+	@make clean -C libft
+	@rm -rf objs
 
 fclean: clean
-	@make -C library fclean
-	@rm -f $(NAME_C) $(NAME_S)
-	@echo "$(CYAN)Executables cleaned$(WHITE)"
+	@make fclean -C libft
+	@rm -f $(NAME_C)
+	@rm -f $(NAME_S)
 
-re: fclean all
+re:: fclean
+re:: all
 
-.PHONY: all clean fclean re
-
+.PHONY: all clean fclean re norma debug
