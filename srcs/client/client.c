@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 20:24:29 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/24 23:09:32 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/25 01:35:52 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ void	send_signal(pid_t pid, int signal)
 
 void	send_signals(void *data, size_t bit_length, t_info *info)
 {
-	unsigned long long  value;
-    int                 i;
+	unsigned long long	value;
+	int					i;
 
 	value = 0;
 	if (bit_length == 8)
@@ -45,13 +45,13 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 	else if (bit_length == 32)
 		value = *((unsigned int *)data);
 	i = bit_length - 1;
-    while (i >= 0)
+	while (i >= 0)
 	{
 		if (value & (1ULL << i))
 			send_signal(info->server_pid, CHAR_1);
 		else
 			send_signal(info->server_pid, CHAR_0);
-        i--;
+		i--;
 		usleep(500 * 500);
 	}
 }
