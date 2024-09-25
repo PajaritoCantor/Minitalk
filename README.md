@@ -1,11 +1,3 @@
-## Tabla de estados
-
-Una tabla de estados es una herramienta común en la programación que se usa en la implementación de **máquinas de estado**. Una *máquina de estado* es un modelo matemático que se usa para diseñar sistemas que cambian de estado en respuesta de ciertos eventos.
-- Una tabla de estados es una matriz o un array que define las stransiciones entre diferentes estados de un sistema. Cada entrada en la tabla indica el próximo estado que se debe alcanzar dado el estado actual y una entrada específica.
-- **Estados:** Representan diferentes condiciones o situaciones en las que el sistema puede encontrarse.
-- **Entradas/Acciones:** Son eventos o inputs que provocan un cambio de estado.
-- **Transiciones:** Definen cómo el sistema cambia de un estado a otra en función de las entradas.
-
 # Client
 
     int main	(int argc, char **argv)
@@ -546,8 +538,3 @@ El campo s**a_flags** en la estructura **sigaction** es un conjunto de opciones 
 **SA_RESETHAND:** Restaura el comportamiento por defecto de la señal después de que esta haya sido manejada una vez, es decir, después de que se ejecute el manejador, la señal vuelve a su comportamiento original.
 
 **SA_NOCLDSTOP:** Impide que se genere una señal SIGCHLD cuando un proceso hijo se detiene o continúa (solo relevante para SIGCHLD).
-
-  
-      void handler(int signum, siginfo_t * info, void  * context)
-
-Esta función recibe un **puntero** a la estructura **siginfo_t** que contiene información detallada sobre la **señal**, como el ***PID del proceso*** que envió la señal, **el tipo de señal**, y otra información relevante.
