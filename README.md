@@ -2,6 +2,18 @@
 
 ## Client
 
+**t_global	g_server;**
+
+Esta variable global **g_server** es utilizada en el cliente para almacenar información sobre el estado del servidor y para gestionar la conexión y comunicación con el servidor.
+
+**g_server.pid:** Este campo almacena el PID del servidor al que el cliente se conecta. El cliente lo utiliza para enviar señales (por ejemplo, confirmaciones y mensajes) al servidor.
+
+**g_server.is_ready:** Indica si el servidor está listo para recibir un mensaje del cliente. Este valor cambia según las señales que el servidor envía al cliente:
+
+Cuando se recibe la señal SIGUSR1 (definida como SERVER_READY), esta variable se pone a 1, indicando que el servidor está listo para recibir el mensaje.
+Cuando se recibe la señal SIGUSR2 (definida como SERVER_BUSY), esta variable
+
+
 **1. Main**
 
 		int	main(int argc, char **argv)
@@ -224,6 +236,24 @@ Esta función mantiene al servidor en funcionamiento de manera indefinida. Utili
 
 
 ## Server
+Variable global g_client (en el servidor)
+La variable global g_client es utilizada en el servidor para almacenar información sobre el cliente que se conecta y el estado de los mensajes que recibe el servidor.
+
+**t_global	g_client;**
+
+g_client.client_pid: Este campo almacena el PID del cliente que envía señales al servidor. Es esencial para poder enviar respuestas al cliente, como confirmar que las señales fueron recibidas.
+
+g_client.actual_pid: Almacena el PID del cliente con el que el servidor está actualmente interactuando. Esto asegura que el servidor no maneje señales de múltiples clientes a la vez. Cuando se recibe la primera señal de un cliente, este campo se llena con el PID del cliente activo.
+
+g_client.getting_header: Esta variable se utiliza para determinar si el servidor está esperando recibir la cabecera del mensaje (es decir, el tamaño del mensaje). Cuando este valor es 1, el servidor interpreta las señales como parte de la cabecera del mensaje.
+
+g_client.getting_msg: Una vez que se ha recibido la cabecera, esta variable se pone a 1 para indicar que el servidor está esperando recibir el mensaje en sí.
+
+g_client.msg: Es una estructura dentro de g_client que contiene información sobre el mensaje:
+
+msg.size_message: Tamaño del mensaje en bits.
+msg.message: Almacena el contenido del mensaje que se recibe del cliente.
+
 
 **1. Función main**
 
