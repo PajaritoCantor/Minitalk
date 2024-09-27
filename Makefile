@@ -26,8 +26,8 @@ SRCS_SHARED = $(addprefix shared/, $(SHARED))
 CLIENT =							\
 			client/main.c			\
 			client/client.c			\
-			client/parser.c			\
-			client/tic.c			\
+			client/process_input.c			\
+			client/check_server_status.c			\
 			$(SRCS_SHARED)			\
 		
 SRCS_C = $(addprefix srcs/, $(CLIENT))
@@ -35,7 +35,7 @@ SRCS_C = $(addprefix srcs/, $(CLIENT))
 SERVER =							\
 			server/main.c			\
 			server/server.c			\
-			server/toc.c			\
+			server/check_client_status.c			\
 			$(SRCS_SHARED)			\
 
 SRCS_S = $(addprefix srcs/, $(SERVER))

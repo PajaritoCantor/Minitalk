@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tic.c                                              :+:      :+:    :+:   */
+/*   check_server_status.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/24 20:24:58 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/24 23:10:53 by jurodrig         ###   ########.fr       */
+/*   Created: 2024/09/27 03:42:22 by jurodrig          #+#    #+#             */
+/*   Updated: 2024/09/27 06:10:33 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 t_global	g_server;
 
-void	tic_handler(int signum, siginfo_t *info, void *context)
+void	server_state_signal_handler(int signum, siginfo_t *info, void *context)
 {
 	(void)signum, (void)context, (void)info;
 	if (info->si_pid == getpid())
@@ -30,7 +30,7 @@ void	tic_handler(int signum, siginfo_t *info, void *context)
 	}
 	if (info->si_pid != g_server.pid)
 	{
-		ft_printfd(2, "Error: Unexpected pid in ping_handler\n");
+		ft_printfd(2, "Error: Unexpected pid in tic_handler\n");
 		return ;
 	}
 	if (signum == SERVER_READY)
@@ -39,7 +39,7 @@ void	tic_handler(int signum, siginfo_t *info, void *context)
 		g_server.is_ready = 0;
 }
 
-void	handle_timeouts(int pid)
+void	attempt_server_connection(int pid)
 {
 	int	i;
 
@@ -47,24 +47,24 @@ void	handle_timeouts(int pid)
 	while (++i < RETRY_TIMES)
 	{
 		kill(pid, SIGUSR1);
-		ft_printf("Waiting response from server\n");
+		ft_printf("Waiting_server_response:\n");
 		sleep(RETRY_TIME);
 		if (g_server.is_ready == 1)
 			break ;
 	}
 }
 
-int	tic(int pid)
+int	check_server_status(int pid)
 {
 	struct sigaction	sa;
 
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = tic_handler;
+	sa.sa_sigaction = server_state_signal_handler;
 	g_server.pid = pid;
 	g_server.is_ready = 0;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
-	handle_timeouts(pid);
-	ft_printf("Server ready: %d\n", g_server.is_ready);
+	attempt_server_connection(pid);
+	ft_printf("Server ready: (%d)\n", g_server.is_ready);
 	return (g_server.is_ready);
 }

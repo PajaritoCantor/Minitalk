@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   process_input.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 20:24:51 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/25 00:16:18 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/28 01:12:27 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-int	get_state(int x, int y)
+int	determinate_transition(int x, int y)
 {
 	const int	states[][2] = {\
 	{1, 2}, \
@@ -23,18 +23,18 @@ int	get_state(int x, int y)
 	return (states[x][y]);
 }
 
-int	choose_state(int state, char c)
+int	calculate_next_state(int state, char c)
 {
 	int	pos;
 
 	pos = 0;
 	if (ft_isdigit(c))
 		pos = 1;
-	state = get_state(state, pos);
+	state = determinate_transition(state, pos);
 	return (state);
 }
 
-void	evaluate(const char *str)
+void	validate_input(const char *str)
 {
 	int	i;
 	int	state;
@@ -43,16 +43,16 @@ void	evaluate(const char *str)
 	state = 0;
 	while (str[i])
 	{
-		state = choose_state(state, str[i]);
+		state = calculate_next_state(state, str[i]);
 		i++;
 	}
 	if (state < 2)
 		ft_print_error((char *)str);
 }
 
-void	parser(int argc, char **argv)
+void	process_input(int argc, char **argv)
 {
 	if (argc != 3)
 		ft_print_error(USAGE);
-	evaluate(argv[1]);
+	validate_input(argv[1]);
 }

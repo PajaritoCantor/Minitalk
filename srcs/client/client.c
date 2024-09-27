@@ -6,13 +6,13 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 20:24:29 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/25 01:35:52 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/28 01:12:10 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-void	init_data(char **argv, t_info *data)
+void	init_client_data(char **argv, t_info *data)
 {
 	ft_memset(data, 0, sizeof(t_info));
 	data->server_pid = ft_atoi_limits(argv[1]);
@@ -34,7 +34,7 @@ void	send_signal(pid_t pid, int signal)
 		ft_print_error("Signal sending failed.");
 }
 
-void	send_signals(void *data, size_t bit_length, t_info *info)
+void	send_message_bits(void *data, size_t bit_length, t_info *info)
 {
 	unsigned long long	value;
 	int					i;
@@ -56,7 +56,7 @@ void	send_signals(void *data, size_t bit_length, t_info *info)
 	}
 }
 
-void	send_message(char *str, t_info *data)
+void	transmit_message_to_server(char *str, t_info *data)
 {
 	struct sigaction	sa;
 	int					i;
@@ -66,5 +66,5 @@ void	send_message(char *str, t_info *data)
 	sigaction(SIGUSR2, &sa, NULL);
 	i = 0;
 	while (str[i])
-		send_signals(&str[i++], 8, data);
+		send_message_bits(&str[i++], 8, data);
 }

@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 16:23:44 by psegura-          #+#    #+#             */
-/*   Updated: 2024/09/24 23:11:34 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/27 07:15:08 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ typedef struct s_global
 
 extern t_global	g_client;
 
-int		toc(int pid);
-void	handle_header(int *i, int signum);
-void	handle_msg(int *i, int signum);
+int		check_client_status(int pid);
+void	header_handler(int *i, int signum);
+void	msg_handler(int *i, int signum);
 
 #endif

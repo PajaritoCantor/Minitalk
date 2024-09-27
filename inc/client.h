@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 16:19:04 by psegura-          #+#    #+#             */
-/*   Updated: 2024/09/25 00:06:27 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:56:32 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,13 @@ typedef struct s_global
 
 extern t_global	g_server;
 
+void	process_input(int argc, char **argv);
+int		check_server_status(int pid);
 
-void	parser(int argc, char **argv);
-int		tic(int pid);
-
-void	init_data(char **argv, t_info *data);
+void	init_client_data(char **argv, t_info *data);
 void	send_signal(pid_t pid, int signal);
-void	send_signals(void *data, size_t bit_length, t_info *info);
+void	send_message_bits(void *data, size_t bit_length, t_info *info);
 void	client_signal_handler(int signum, siginfo_t *info, void *context);
-void	send_message(char *str, t_info *data);
+void	transmit_message_to_server(char *str, t_info *data);
 
 #endif
