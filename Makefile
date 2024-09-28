@@ -26,7 +26,7 @@ SRCS_SHARED = $(addprefix shared/, $(SHARED))
 CLIENT =							\
 			client/main.c			\
 			client/client.c			\
-			client/process_input.c			\
+			client/validate_arguments.c			\
 			client/check_server_status.c			\
 			$(SRCS_SHARED)			\
 		

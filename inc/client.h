@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 16:19:04 by psegura-          #+#    #+#             */
-/*   Updated: 2024/09/27 23:56:32 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/28 02:16:18 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_global
 
 extern t_global	g_server;
 
-void	process_input(int argc, char **argv);
+void	validate_arguments(int argc, char **argv);
 int		check_server_status(int pid);
 
 void	init_client_data(char **argv, t_info *data);

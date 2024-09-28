@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   process_input.c                                    :+:      :+:    :+:   */
+/*   validate_arguments.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 20:24:51 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/28 01:12:27 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/28 02:17:06 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-int	determinate_transition(int x, int y)
+int	get_state(int x, int y)
 {
 	const int	states[][2] = {\
 	{1, 2}, \
@@ -23,18 +23,18 @@ int	determinate_transition(int x, int y)
 	return (states[x][y]);
 }
 
-int	calculate_next_state(int state, char c)
+int	choose_state(int state, char c)
 {
 	int	pos;
 
 	pos = 0;
 	if (ft_isdigit(c))
 		pos = 1;
-	state = determinate_transition(state, pos);
+	state = get_state(state, pos);
 	return (state);
 }
 
-void	validate_input(const char *str)
+void	evaluate_pid(const char *str)
 {
 	int	i;
 	int	state;
@@ -43,16 +43,16 @@ void	validate_input(const char *str)
 	state = 0;
 	while (str[i])
 	{
-		state = calculate_next_state(state, str[i]);
+		state = choose_state(state, str[i]);
 		i++;
 	}
 	if (state < 2)
 		ft_print_error((char *)str);
 }
 
-void	process_input(int argc, char **argv)
+void	validate_arguments(int argc, char **argv)
 {
 	if (argc != 3)
 		ft_print_error(USAGE);
-	validate_input(argv[1]);
+	evaluate_pid(argv[1]);
 }

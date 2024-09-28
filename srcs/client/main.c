@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 14:53:52 by psegura-          #+#    #+#             */
-/*   Updated: 2024/09/27 23:57:05 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/28 03:55:35 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	main(int argc, char **argv)
 
 	(void)argc, (void)argv;
 	ft_printfd(2, "ARGC:[%d]\n", argc);
-	process_input(argc, argv);
+	validate_arguments(argc, argv);
 	init_client_data(argv, &client);
 	if (check_server_status(client.server_pid) == 0)
 		return (0);

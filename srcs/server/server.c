@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 14:53:49 by psegura-          #+#    #+#             */
-/*   Updated: 2024/09/27 07:14:59 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/28 03:57:04 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	get_signal_bit(int signum)
 void	allocate_memmory_for_message(int *i)
 {
 	printf("SIZE_MSG: [%d]\n", g_client.msg.size_message);
-	g_client.msg.message = ft_calloc((g_client.msg.size_message + 1), 1);
+	g_client.msg.message = malloc((g_client.msg.size_message + 1) * 1);
 	if (g_client.msg.message == NULL)
 		ft_print_error("Memory allocation failed");
 	g_client.getting_header = 0;
