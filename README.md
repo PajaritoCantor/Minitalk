@@ -461,5 +461,6 @@ Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verific
 	        g_client.actual_pid = 0;  // Reinicia el PID actual.
 	    }
 	}
-
 * **msg_handler():** Maneja la recepción del cuerpo del mensaje. Combina los bits recibidos en caracteres y los almacena en el mensaje. Cuando el mensaje completo se ha recibido, se imprime y se libera la memoria.
+
+
