@@ -1,5 +1,21 @@
 ## Glosario
 
+* **Señales en UNIX**
+
+Las señales en UNIX son un mecanismo que permite la comunicación entre procesos o entre el sistema operativo y un proceso. Las señales son interrupciones asíncronas que notifican a un proceso que ha ocurrido un evento determinado, como una operación específica del sistema o una acción del usuario. Cada señal está asociada con un número de código y puede ser capturada o ignorada por el proceso, o bien el proceso puede terminar su ejecución en respuesta a la señal.
+
+**Características Claves:**
+
+* **Asíncronas:** Las señales se pueden enviar en cualquier momento, interrumpiendo la ejecución normal de un proceso.
+* **Predeterminadas o Personalizadas:** El sistema operativo puede enviar señales para eventos predefinidos (por ejemplo, SIGINT se envía cuando el usuario presiona Ctrl+C), pero los procesos también pueden enviar señales entre sí.
+Manejo de Señales: Los procesos pueden definir manejadores personalizados para reaccionar de manera específica a las señales (por ejemplo, limpiando recursos antes de finalizar). Esto se gestiona comúnmente mediante la estructura sigaction.
+Ejemplos de Señales Comunes:
+* **SIGINT:** Interrupción desde el teclado (Ctrl+C).
+* **SIGTERM:** Solicitud de finalización del proceso.
+* **SIGKILL:** Finaliza el proceso inmediatamente (no puede ser capturada ni ignorada).
+**SIGUSR1 y SIGUSR2:** Señales definidas por el usuario, utilizadas para la comunicación personalizada entre procesos.
+
+
 * **Tabla de estados:** Es una matriz que define las transiciones entre estados según la entrada recibida. Cada fila corresponde a un estado actual, y cada columna indica la acción a tomar en función de una condición (en este caso, si la entrada es un dígito o no).
 
 * **Estados:** Los diferentes "modos" en los que puede encontrarse la máquina de estados. En tu caso:
