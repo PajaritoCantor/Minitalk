@@ -1,12 +1,63 @@
-## Tabla de estados
+## Glosario
 
-Una tabla de estados es una herramienta común en la programación que se usa en la implementación de **máquinas de estado**. Una *máquina de estado* es un modelo matemático que se usa para diseñar sistemas que cambian de estado en respuesta de ciertos eventos.
-- Una tabla de estados es una matriz o un array que define las stransiciones entre diferentes estados de un sistema. Cada entrada en la tabla indica el próximo estado que se debe alcanzar dado el estado actual y una entrada específica.
-- **Estados:** Representan diferentes condiciones o situaciones en las que el sistema puede encontrarse.
-- **Entradas/Acciones:** Son eventos o inputs que provocan un cambio de estado.
-- **Transiciones:** Definen cómo el sistema cambia de un estado a otra en función de las entradas.
+* **Tabla de estados:** Es una matriz que define las transiciones entre estados según la entrada recibida. Cada fila corresponde a un estado actual, y cada columna indica la acción a tomar en función de una condición (en este caso, si la entrada es un dígito o no).
 
-#Client
+* **Estados:** Los diferentes "modos" en los que puede encontrarse la máquina de estados. En tu caso:
+
+* **Estado 0: Inicio (Init).**
+* **Estado 1: Error (ERR).**
+* **Estado 2: Se encontró un dígito (Found Digit).**
+* **Posición (pos): Determina si la entrada es un dígito o no. Si la entrada es un dígito (isdigit(c)), se establece pos = 1, de lo contrario pos = 0.**
+
+* **Relación entre posición y estado:**
+
+* Si el programa está en el Estado 0 (inicio) y encuentra un dígito (pos = 1), la tabla indica que debe transitar al Estado 2 (dígito encontrado).
+  
+* Si el programa está en el Estado 0 y no encuentra un dígito (pos = 0), transita al Estado 1 (error).
+  
+* El Estado 1 (error) siempre lleva a sí mismo, ya que un error no se corrige.
+  
+* El Estado 2 (dígito encontrado) transita nuevamente a sí mismo si encuentra más dígitos.
+
+		const int states[][2] = {
+		   {1, 2},  // Estado 0: [sin dígito -> 1 (ERR), dígito -> 2 (Found Digit)]
+		   {1, 1},  // Estado 1: [sin dígito -> 1 (ERR), dígito -> 1 (ERR)]
+		   {1, 2},  // Estado 2: [sin dígito -> 1 (ERR), dígito -> 2 (Found Digit)]
+		};
+
+* **[0][0] = 1:** Si estamos en el Estado 0 y la entrada no es un dígito (pos = 0), transita al Estado 1 (error).
+* **[0][1] = 2:** Si estamos en el Estado 0 y la entrada es un dígito (pos = 1), transita al Estado 2 (dígito encontrado).
+* **[1][0] y [1][1] = 1:** Si estamos en el Estado 1 (error), permanece en el Estado 1 (el error es irreversible).
+* **[2][0] = 1:** Si estamos en el Estado 2 (dígito encontrado) y la entrada no es un dígito, transita al Estado 1 (error).
+* **[2][1] = 2:** Si estamos en el Estado 2 y la entrada es un dígito, permanece en el Estado 2.
+
+* **Sigaction**
+
+La estructura sigaction es utilizada para definir cómo un programa debe manejar señales. Esta estructura es clave cuando necesitas tener control preciso sobre qué hacer cuando el sistema operativo envía una señal a tu programa.
+
+**Componentes principales de la estructura:**
+
+**sa_handler o sa_sigaction:** El campo sa_handler define la función que será llamada cuando ocurra una señal. Alternativamente, puedes usar sa_sigaction para proporcionar información adicional sobre la señal recibida.
+**sa_flags:** Un conjunto de banderas que modifican cómo se maneja la señal.
+**sa_mask:** Define qué señales deben bloquearse mientras el manejador de señales está en ejecución.
+**sa_flags**
+Este campo en la estructura sigaction se utiliza para controlar cómo se deben manejar las señales. Algunas de las banderas más comunes son:
+
+**SA_SIGINFO:** Indica que quieres recibir información adicional sobre la señal, permitiéndote usar sa_sigaction en lugar de sa_handler.
+
+**SA_RESTART:** Hace que ciertas llamadas al sistema (como read, write, etc.) se reinicien automáticamente si fueron interrumpidas por una señal.
+
+**SA_NODEFER:** Permite que la señal que está siendo manejada no sea bloqueada mientras el manejador está activo. Por defecto, cuando una señal es recibida, el sistema la bloquea hasta que el manejador termine.
+
+**SA_RESETHAND:** Restaura el comportamiento por defecto de la señal después de que se haya manejado una vez. Esto significa que, tras manejar la señal, volverá a su comportamiento original.
+
+**SA_NOCLDSTOP:** Impide que se genere una señal SIGCHLD cuando un proceso hijo se detiene o reanuda su ejecución (solo relevante para SIGCHLD).
+
+# MINITALK
+
+Minitalk es un proyecto desarrollado en C que implementa un sistema de comunicación entre un cliente y un servidor utilizando señales de Unix (como SIGUSR1 y SIGUSR2). El objetivo es que el cliente envíe mensajes al servidor, y el servidor los procese y responda de manera eficiente. 
+
+## Client
 
 * **1. Main**
 
@@ -412,49 +463,3 @@ Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verific
 	}
 
 * **msg_handler():** Maneja la recepción del cuerpo del mensaje. Combina los bits recibidos en caracteres y los almacena en el mensaje. Cuando el mensaje completo se ha recibido, se imprime y se libera la memoria.
-
-
-
-
-
-
-**Glosario**
-
-## Tabla de estados
-
-Una tabla de estados es una herramienta común en la programación que se usa en la implementación de **máquinas de estado**. Una *máquina de estado* es un modelo matemático que se usa para diseñar sistemas que cambian de estado en respuesta de ciertos eventos.
-- Una tabla de estados es una matriz o un array que define las stransiciones entre diferentes estados de un sistema. Cada entrada en la tabla indica el próximo estado que se debe alcanzar dado el estado actual y una entrada específica.
-- **Estados:** Representan diferentes condiciones o situaciones en las que el sistema puede encontrarse.
-- **Entradas/Acciones:** Son eventos o inputs que provocan un cambio de estado.
-- **Transiciones:** Definen cómo el sistema cambia de un estado a otra en función de las entradas.
-
-## sigaction
-
-La estructura sigaction es utilizada para definir cómo un proceso maneja señales específicas. Es una estructura que contiene información sobre cómo manejar una señal. Los miembros más importantes de esta estructura son:
-
-**sa_handler o sa_sigaction:** Aquí puedes especificar una función que será llamada cuando una señal sea recibida.
-**sa_flags:** Establece ciertas opciones sobre cómo se debe manejar la señal (por ejemplo, si se debe usar el manejador de señales extendido o no).
-**sa_mask:** Define qué otras señales deben bloquearse mientras se está ejecutando el manejador de señales.
-
-## sa_flags
-
-El campo s**a_flags** en la estructura **sigaction** es un conjunto de opciones que modifican el comportamiento del **manejador de señales**. Algunas de las banderas más comunes que se pueden configurar en sa_flags incluyen:
-
-### SA_SIGINFO
-
-- Es una bandera utilizada en el contexto de la función ***sigaction*** para especificar cómo debe manejarse unaa señal en un programa C. Es parte del **estándar POSIX***.
-  
-- Su propósito es indicar que se desea usar una función manejadora de señales más avanzada que provea información adicional sobre la señal, en lugar de solo usar un simple manejador de señales (es decir, solo pasando el número de la señal).
-  
-**SA_RESTART:** Hace que algunas llamadas al sistema (como read, write, etc.) que son interrumpidas por la señal se reinicien automáticamente.
-
-**SA_NODEFER:** Permite que la señal que está siendo manejada no sea bloqueada mientras el manejador está activo.
-
-**SA_RESETHAND:** Restaura el comportamiento por defecto de la señal después de que esta haya sido manejada una vez, es decir, después de que se ejecute el manejador, la señal vuelve a su comportamiento original.
-
-**SA_NOCLDSTOP:** Impide que se genere una señal SIGCHLD cuando un proceso hijo se detiene o continúa (solo relevante para SIGCHLD).
-
-  
-      void handler(int signum, siginfo_t * info, void  * context)
-
-Esta función recibe un **puntero** a la estructura **siginfo_t** que contiene información detallada sobre la **señal**, como el ***PID del proceso*** que envió la señal, **el tipo de señal**, y otra información relevante.
