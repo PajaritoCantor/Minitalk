@@ -191,7 +191,7 @@ La función main gestiona la ejecución del programa. Primero, valida los argume
 		    return (g_server.is_ready);
 		}
 
-**check_server_status** intenta conectarse al servidor enviando señales al **PID** proporcionado. Usa la función sigaction para asociar las señales **SIGUSR1** y **SIGUSR2** con el manejador **server_state_signal_handler**. Llama a **attempt_server_connection** para enviar señales de conexión al servidor y esperar su respuesta.
+* **check_server_status** intenta conectarse al servidor enviando señales al **PID** proporcionado. Usa la función sigaction para asociar las señales **SIGUSR1** y **SIGUSR2** con el manejador **server_state_signal_handler**. Llama a **attempt_server_connection** para enviar señales de conexión al servidor y esperar su respuesta.
 
 * **8. Función attempt_server_connection**
 
@@ -392,7 +392,7 @@ Imprime información sobre la señal y el índice actual (i) si el PID del clien
 * **server_signal_handler():** Maneja las señales recibidas del **cliente**. Utiliza el **PID del cliente** para actualizar el estado y decidir si se deben manejar encabezados o mensajes.
 Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verifican condiciones relacionadas con el estado del **cliente.**
 
-6. Función check_client_status
+* **6. Función check_client_status**
 
 		int check_client_status(int pid)
 		{
@@ -404,7 +404,7 @@ Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verific
 		check_client_status(): Notifica al cliente que el servidor está listo para recibir mensajes, actualiza el estado y establece que se está recibiendo el encabezado.
 		
 
-7. Función get_signal_bit
+* **7. Función get_signal_bit**
 
 		int get_signal_bit(int signum)
 		{
@@ -415,7 +415,7 @@ Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verific
 		get_signal_bit(): Convierte la señal recibida en un valor de bit (0 o 1) para su procesamiento posterior.
 
 
-8. Función allocate_memmory_for_message
+* **8. Función allocate_memmory_for_message**
 
 		void allocate_memmory_for_message(int *i)
 		{
