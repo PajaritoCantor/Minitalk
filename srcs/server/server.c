@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 14:53:49 by psegura-          #+#    #+#             */
-/*   Updated: 2024/09/28 03:57:04 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/30 22:04:17 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	get_signal_bit(int signum)
 
 void	allocate_memmory_for_message(int *i)
 {
-	printf("SIZE_MSG: [%d]\n", g_client.msg.size_message);
+	ft_printf("SIZE_MSG: [%d]\n", g_client.msg.size_message);
 	g_client.msg.message = malloc((g_client.msg.size_message + 1) * 1);
 	if (g_client.msg.message == NULL)
 		ft_print_error("Memory allocation failed");
@@ -62,7 +62,7 @@ void	msg_handler(int *i, int signum)
 	}
 	if (*i / 8 == g_client.msg.size_message)
 	{
-		printf("message: [%s]\n", g_client.msg.message);
+		ft_printf("message: [%s]\n", g_client.msg.message);
 		free(g_client.msg.message);
 		ft_bzero(&g_client, sizeof(g_client));
 		g_client.getting_header = 1;
