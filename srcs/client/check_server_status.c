@@ -6,7 +6,7 @@
 /*   By: jurodrig <jurodrig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 03:42:22 by jurodrig          #+#    #+#             */
-/*   Updated: 2024/09/27 06:10:33 by jurodrig         ###   ########.fr       */
+/*   Updated: 2024/09/30 19:17:23 by jurodrig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	server_state_signal_handler(int signum, siginfo_t *info, void *context)
 	}
 	if (info->si_pid != g_server.pid)
 	{
-		ft_printfd(2, "Error: Unexpected pid in tic_handler\n");
+		ft_printfd(2, "Error: Unexpected Sending process ID\n");
 		return ;
 	}
 	if (signum == SERVER_READY)
