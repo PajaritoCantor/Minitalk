@@ -1,4 +1,30 @@
+# Aclaración
+Este proyecto está **inspirado** y **emulado** de una versión del proyecto Minitalk desarrollado por **[@PepeSegura](https://github.com/PepeSegura),** a quien agradezco profundamente su ayuda y motivación en el desarrollo de este trabajo, fundamental para mi avance personal. 
+
+**Emular suele implicar que lo que se imita se toma como un modelo positivo e incluso se puede querer superarlo**, **repitiendo procesos** con la intención de **comprenderlos**, **asimilarlos** y, eventualmente, **adaptarlos** a las propias necesidades. Este **enfoque autodidacta** aplicado en mis primeros proyectos, me ayudó a **fortalecer conceptos** y **lógicas de programación** que con anterioridad parecían inalcanzables, y que ahora puedo aplicar en mis actuales proyectos.
+
+Sobre **Minitalk** he visto cómo muchos estudiantes de **mi campus** lo abordan de manera superficial, subestimando su importancia. Sin embargo, para alguien como yo, que proviene de una disciplina completamente distinta, **Minitalk** representó un desafío extraordinario, una prueba de **paciencia**, **dedicación** y capacidad de conectar ideas que en un principio parecían no tener sentido.
+
+**Mi objetivo**, como en los demás proyectos, es compartir mi experiencia y manera de abordar este tipo de proyectos para que otros, que tal vez han estado en la misma situación, puedan encontrar **motivación y herramientas** útiles para seguir adelante. **El camino del aprendizaje no es lineal**, y **cada quien lo transita a su manera**. Este proyecto es una contribución y **recordatorio** de que, aunque sea difícil, siempre se puede aprender algo nuevo.
+
+**PD:** Los aportes de glosario y las especificaciones propias de cada función son contribuciones personales, resultado de las lecturas que suelo hacer en la red. En proyectos futuros prometo citar fuentes para que podais acudir directamente a ellas, pero en este caso, fueron el resultado de un sinnúmero de páginas web que intenté resumir a **"simples conceptos y explicaciones clave"**.
 ## Glosario
+
+* **Señales en UNIX**
+
+Las señales en UNIX son un mecanismo que permite la comunicación entre procesos o entre el sistema operativo y un proceso. Las señales son interrupciones asíncronas que notifican a un proceso que ha ocurrido un evento determinado, como una operación específica del sistema o una acción del usuario. Cada señal está asociada con un número de código y puede ser capturada o ignorada por el proceso, o bien el proceso puede terminar su ejecución en respuesta a la señal.
+
+**Características Claves:**
+
+* **Asíncronas:** Las señales se pueden enviar en cualquier momento, interrumpiendo la ejecución normal de un proceso.
+* **Predeterminadas o Personalizadas:** El sistema operativo puede enviar señales para eventos predefinidos (por ejemplo, SIGINT se envía cuando el usuario presiona Ctrl+C), pero los procesos también pueden enviar señales entre sí.
+Manejo de Señales: Los procesos pueden definir manejadores personalizados para reaccionar de manera específica a las señales (por ejemplo, limpiando recursos antes de finalizar). Esto se gestiona comúnmente mediante la estructura sigaction.
+Ejemplos de Señales Comunes:
+* **SIGINT:** Interrupción desde el teclado (Ctrl+C).
+* **SIGTERM:** Solicitud de finalización del proceso.
+* **SIGKILL:** Finaliza el proceso inmediatamente (no puede ser capturada ni ignorada).
+**SIGUSR1 y SIGUSR2:** Señales definidas por el usuario, utilizadas para la comunicación personalizada entre procesos.
+
 
 * **Tabla de estados:** Es una matriz que define las transiciones entre estados según la entrada recibida. Cada fila corresponde a un estado actual, y cada columna indica la acción a tomar en función de una condición (en este caso, si la entrada es un dígito o no).
 
@@ -175,7 +201,7 @@ La función main gestiona la ejecución del programa. Primero, valida los argume
 		    return (g_server.is_ready);
 		}
 
-**check_server_status** intenta conectarse al servidor enviando señales al **PID** proporcionado. Usa la función sigaction para asociar las señales **SIGUSR1** y **SIGUSR2** con el manejador **server_state_signal_handler**. Llama a **attempt_server_connection** para enviar señales de conexión al servidor y esperar su respuesta.
+* **check_server_status** intenta conectarse al servidor enviando señales al **PID** proporcionado. Usa la función sigaction para asociar las señales **SIGUSR1** y **SIGUSR2** con el manejador **server_state_signal_handler**. Llama a **attempt_server_connection** para enviar señales de conexión al servidor y esperar su respuesta.
 
 * **8. Función attempt_server_connection**
 
@@ -376,7 +402,7 @@ Imprime información sobre la señal y el índice actual (i) si el PID del clien
 * **server_signal_handler():** Maneja las señales recibidas del **cliente**. Utiliza el **PID del cliente** para actualizar el estado y decidir si se deben manejar encabezados o mensajes.
 Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verifican condiciones relacionadas con el estado del **cliente.**
 
-6. Función check_client_status
+* **6. Función check_client_status**
 
 		int check_client_status(int pid)
 		{
@@ -388,7 +414,7 @@ Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verific
 		check_client_status(): Notifica al cliente que el servidor está listo para recibir mensajes, actualiza el estado y establece que se está recibiendo el encabezado.
 		
 
-7. Función get_signal_bit
+* **7. Función get_signal_bit**
 
 		int get_signal_bit(int signum)
 		{
@@ -399,7 +425,7 @@ Las **señales recibidas **(SIGUSR1** y **SIGUSR2)** son procesadas y se verific
 		get_signal_bit(): Convierte la señal recibida en un valor de bit (0 o 1) para su procesamiento posterior.
 
 
-8. Función allocate_memmory_for_message
+* **8. Función allocate_memmory_for_message**
 
 		void allocate_memmory_for_message(int *i)
 		{
