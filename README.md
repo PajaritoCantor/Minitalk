@@ -201,7 +201,17 @@ La función main gestiona la ejecución del programa. Primero, valida los argume
 		    return (g_server.is_ready);
 		}
 
-* **check_server_status** intenta conectarse al servidor enviando señales al **PID** proporcionado. Usa la función sigaction para asociar las señales **SIGUSR1** y **SIGUSR2** con el manejador **server_state_signal_handler**. Llama a **attempt_server_connection** para enviar señales de conexión al servidor y esperar su respuesta.
+* **check_server_status** intenta conectarse al servidor enviando señales al **PID** proporcionado.
+
+* **Configuración del Manejador de Señales:** Se inicializa una estructura sigaction para configurar el comportamiento de las señales **SIGUSR1** y **SIGUSR2.**
+- Ambas señales se asocian con la función manejadora **server_state_signal_handler**, que procesará las respuestas del **server**.
+
+* **Inicialización de Variables Globales:** **g_server.pid** se establece en el pid del server para usarlo como referencia al validar señales entrantes.
+- **g_server.is_ready** se inicializa en 0 para reflejar que, inicialmente, el servidor no está listo.
+
+* **Intento de Conexión:** La función llama a **attempt_server_connection(pid)** para iniciar el proceso de comunicación. **(VER EXPLICACIÓN DE attempt_server_connection)**
+
+* **Salida:** Imprime el estado de disponibilidad del servidor y devuelve **g_server.is_ready**. Si el servidor respondió correctamente, **g_server.is_ready** será 1; de lo contrario, permanecerá en 0.
 
 * **8. Función attempt_server_connection**
 
@@ -220,7 +230,20 @@ La función main gestiona la ejecución del programa. Primero, valida los argume
 		    }
 		}
 
-**attempt_server_connection** envía señales de solicitud **(SIGUSR1)** al **servidor** y espera una respuesta por un tiempo determinado, definido por las constantes **RETRY_TIMES** y **RETRY_TIME**. Si el servidor responde con la señal **SERVER_READY**, se detiene el ciclo.
+* **attempt_server_connection** envía señales de solicitud **(SIGUSR1)** al **servidor** y espera una respuesta por un tiempo determinado, definido por las constantes **RETRY_TIMES** y **RETRY_TIME**. Si el servidor responde con la señal **SERVER_READY**, se detiene el ciclo.
+
+**Ciclo de Intentos:**
+- **Envío de Señal:** Se utiliza **kill(pid, SIGUSR1)** para enviar la señal **SIGUSR1** al **server**, indicando una solicitud de conexión.
+
+- **Esperar Respuesta:**
+El programa espera un intervalo de tiempo **(RETRY_TIME)** antes de verificar si el servidor respondió.
+
+- **Verificación del Estado:**
+Si **g_server.is_ready** es igual a 1 (indicación de que el servidor está listo), el ciclo se interrumpe.
+
+* **Límite de Intentos:**
+El ciclo repite el proceso hasta alcanzar el máximo definido por **RETRY_TIMES.**
+Si el servidor no responde después de los intentos permitidos, el proceso termina sin éxito.
 
 * **9. Manejador de Señales del Servidor server_state_signal_handler**
 
@@ -244,6 +267,15 @@ La función main gestiona la ejecución del programa. Primero, valida los argume
 		}
 
 Este manejador de señales, **server_state_signal_handler**, responde a las señales recibidas del **servidor**. Si la señal es **SERVER_READY,** actualiza el estado de disponibilidad del servidor a 1. Si es **SERVER_BUSY** lo actualiza a **0**.
+
+* **Validaciones Iniciales:**
+- **Proceso Propio:** Si info->si_pid coincide con el PID del proceso actual (getpid()), la señal proviene de un error interno, y el programa se detiene con un mensaje de error.
+- **PID No Esperado:** Si info->si_pid no coincide con g_server.pid, la señal proviene de un proceso no esperado, y se descarta con un mensaje de error.
+* **Procesamiento de Señales:**
+**SERVER_READY:**
+Si la señal recibida indica que el servidor está listo, se establece g_server.is_ready = 1.
+**SERVER_BUSY:**
+Si el servidor está ocupado, se establece g_server.is_ready = 0.
 
 * **10. Función send_message_bits**
 
