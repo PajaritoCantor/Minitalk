@@ -1,8 +1,6 @@
 # Aclaración
 Este proyecto está **inspirado** y **emulado** de una versión del proyecto Minitalk desarrollado por **[@PepeSegura](https://github.com/PepeSegura),** a quien agradezco profundamente su ayuda y motivación en el desarrollo de este trabajo, fundamental para mi avance personal. 
 
-**Emular suele implicar que lo que se imita se toma como un modelo positivo e incluso se puede querer superarlo**, **repitiendo procesos** con la intención de **comprenderlos**, **asimilarlos** y, eventualmente, **adaptarlos** a las propias necesidades. Este **enfoque autodidacta** aplicado en mis primeros proyectos, me ayudó a **fortalecer conceptos** y **lógicas de programación** que con anterioridad parecían inalcanzables, y que ahora puedo aplicar en mis actuales proyectos.
-
 Sobre **Minitalk** he visto cómo muchos estudiantes de **mi campus** lo abordan de manera superficial, subestimando su importancia. Sin embargo, para alguien como yo, que proviene de una disciplina completamente distinta, **Minitalk** representó un desafío extraordinario, una prueba de **paciencia**, **dedicación** y capacidad de conectar ideas que en un principio parecían no tener sentido.
 
 **Mi objetivo**, como en los demás proyectos, es compartir mi experiencia y manera de abordar este tipo de proyectos para que otros, que tal vez han estado en la misma situación, puedan encontrar **motivación y herramientas** útiles para seguir adelante. **El camino del aprendizaje no es lineal**, y **cada quien lo transita a su manera**. Este proyecto es una contribución y **recordatorio** de que, aunque sea difícil, siempre se puede aprender algo nuevo.
